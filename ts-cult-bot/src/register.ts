@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { fetch } from "undici";
 
 export const CREATE_JOB_POST = {
