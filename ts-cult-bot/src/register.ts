@@ -1,13 +1,15 @@
-import { fetch } from "undici";
+import * as dotenv from "dotenv";
+dotenv.config();
 
-export const CREATE_JOB_POST = {
+// TODO - Figure out how to get this to work on a Route on the CF Worker
+const CREATE_JOB_POST = {
   name: "create-job-post",
   description: "Request to mods to create a job post",
 };
 
 const token = process.env.DISCORD_TOKEN as string;
 const applicationId = process.env.DISCORD_APPLICATION_ID as string;
-const testGuildId = process.env.DISCORD_TEST_GUILD_ID as string;
+const testGuildId = process.env.DISCORD_GUILD_ID as string;
 
 const missingEnvVars: string[] = [];
 const checkEnvVar = (envVar: string | undefined, name: string) => {
@@ -66,3 +68,4 @@ async function registerCommands(url) {
 
 // await registerGlobalCommands();
 await registerGuildCommands();
+export {};

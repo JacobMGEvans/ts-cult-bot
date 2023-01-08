@@ -6,6 +6,6 @@ export default {
     env: any,
     ctx: ExecutionContext
   ): Promise<Response> {
-    return new Response("Hello World!");
+    return new Response(JSON.stringify({ request, env, ctx }));
   },
 };
