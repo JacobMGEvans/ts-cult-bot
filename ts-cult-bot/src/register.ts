@@ -1,11 +1,12 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
-// TODO - Figure out how to get this to work on a Route on the CF Worker
-const CREATE_JOB_POST = {
+export const CREATE_JOB_POST = {
   name: "create-job-post",
   description: "Request to mods to create a job post",
 };
+
+// TODO - Figure out how to get this to work on a Route on the CF Worker
 
 const token = process.env.DISCORD_TOKEN as string;
 const applicationId = process.env.DISCORD_APPLICATION_ID as string;

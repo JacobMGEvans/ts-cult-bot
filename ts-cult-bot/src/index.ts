@@ -1,11 +1,10 @@
-/* eslint-disable */
+import { Hono } from "hono";
 
-export default {
-  async fetch(
-    request: Request,
-    env: any,
-    ctx: ExecutionContext
-  ): Promise<Response> {
-    return new Response(JSON.stringify({ request, env, ctx }));
-  },
-};
+// never type to show that we don't have any Worker bindings yet
+const app = new Hono<{ Bindings: never }>();
+
+app.get("/", (c) => {
+  return c.text(`Hello World. ${JSON.stringify(c, null, 2)})}`);
+});
+
+export default app;

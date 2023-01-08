@@ -12,7 +12,8 @@
     "wrangler": "^2.6.2"
   },
   "dependencies": {
+    "discord-interactions": "^3.2.0",
     "dotenv": "^16.0.3",
-    "ngrok": "^4.3.3"
+    "hono": "^2.7.2"
   }
 }
