@@ -5,9 +5,9 @@ export const CREATE_JOB_POST = {
   description: "Request to mods to create a job post",
 };
 
-const token = process.env.DISCORD_TOKEN;
-const applicationId = process.env.DISCORD_APPLICATION_ID;
-const testGuildId = process.env.DISCORD_TEST_GUILD_ID;
+const token = process.env.DISCORD_TOKEN as string;
+const applicationId = process.env.DISCORD_APPLICATION_ID as string;
+const testGuildId = process.env.DISCORD_TEST_GUILD_ID as string;
 
 const missingEnvVars: string[] = [];
 const checkEnvVar = (envVar: string | undefined, name: string) => {
