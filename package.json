@@ -1,4 +1,24 @@
 {
+  "name": "ts-cult-bot",
+  "version": "1.0.0",
+  "description": "1. In the parent directory, run `npm i`",
+  "main": "index.js",
+  "scripts": {
+    "bot": "npm start --prefix bot",
+    "dashboard": "npm run dev --prefix dashboard",
+    "dev": "concurrently \"npm run bot\" \"npm run dashboard\" ",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JacobMGEvans/ts-cult-bot.git"
+  },
+  "author": "Jacob MG Evans and Roy Anger",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JacobMGEvans/ts-cult-bot/issues"
+  },
+  "homepage": "https://github.com/JacobMGEvans/ts-cult-bot#readme",
   "dependencies": {
     "concurrently": "^7.6.0"
   }
