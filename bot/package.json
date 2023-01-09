@@ -1,0 +1,22 @@
+{
+  "name": "typesafe-cult-mod-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JacobMGEvans/ts-cult-bot.git"
+  },
+  "author": "Jacob MG Evans and Roy Anger",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JacobMGEvans/ts-cult-bot/issues"
+  },
+  "homepage": "https://github.com/JacobMGEvans/ts-cult-bot#readme",
+  "devDependencies": {
+    "discord.js": "^14.7.1"
+  }
+}
