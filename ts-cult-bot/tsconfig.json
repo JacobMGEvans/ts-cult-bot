@@ -1,5 +1,10 @@
 {
-  "extends": "../tsconfig.json",
+  "ts-node": {
+    "swc": true,
+    "files": true,
+    "compilerOptions": {}
+  },
+
   "compilerOptions": {
     /* Projects */
     "incremental": true /* Enable incremental compilation */,
