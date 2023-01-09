@@ -1,41 +1,49 @@
-import { Hono } from "hono";
+import Fastify from "fastify";
+import * as dotenv from "dotenv";
 import {
   InteractionResponseType,
   InteractionType,
   verifyKeyMiddleware,
 } from "discord-interactions";
+dotenv.config();
 
-type Env = {
-  DISCORD_PUBLIC_KEY: string;
-  DISCORD_APPLICATION_ID: string;
-};
-const app = new Hono<{ Bindings: Env }>();
-
-app.use("*", async (c, next) => {
-  verifyKeyMiddleware(c.env.DISCORD_PUBLIC_KEY);
-  await next();
+const fastify = Fastify({
+  logger: true,
 });
+
+// Pretty sure this is for middleware
+await fastify.register(
+  verifyKeyMiddleware(process.env.DISCORD_PUBLIC_KEY as string)
+);
 
 /**
  * A simple :wave: hello page to verify the worker is working.
  */
-app.get("/", ({ env }) => {
-  return new Response(`👋 ${env.DISCORD_APPLICATION_ID}`);
+fastify.get("/", async (_, reply) => {
+  return reply.send(`👋 ${process.env.DISCORD_APPLICATION_ID as string}`);
 });
 
-app.post("/", async (c) => {
-  const message = await c.req.json();
+fastify.post("/", async (request, reply) => {
+  const message = (await request.body) as Record<string, InteractionType>;
   if (message.type === InteractionType.PING) {
     console.log(JSON.stringify(message, null, 2));
     // The `PING` message is used during the initial webhook handshake, and is
     // required to configure the webhook in the developer portal.
     console.log("Handling Ping request");
-    return c.json({
+    return reply.send({
       type: JSON.stringify(InteractionResponseType.PONG),
     });
   }
 
-  return c.text(JSON.stringify(message, null, 2));
+  return reply.send(JSON.stringify(message, null, 2));
 });
 
-export default app;
+const start = async () => {
+  try {
+    await fastify.listen({ port: 3000 });
+  } catch (err) {
+    fastify.log.error(err);
+    process.exit(1);
+  }
+};
+await start();
