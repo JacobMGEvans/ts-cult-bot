@@ -2,3 +2,6 @@ name = "ts-cult-bot"
 main = "src/index.ts"
 compatibility_date = "2023-01-07"
 node_compat = true
+
+[vars]
+DISCORD_PUBLIC_KEY = "99901a876a8157d08a350786637f8aeb56189d211e6380c7a682e9c1128b9609"
