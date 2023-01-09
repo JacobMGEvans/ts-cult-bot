@@ -1,4 +1,0 @@
-name = "ts-cult-bot"
-main = "src/index.ts"
-compatibility_date = "2023-01-07"
-node_compat = true

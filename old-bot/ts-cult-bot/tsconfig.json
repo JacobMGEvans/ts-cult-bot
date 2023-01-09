@@ -1,7 +1,11 @@
 {
-  "compilerOptions": {
-    /* Visit https://aka.ms/tsconfig.json to read more about this file */
+  "ts-node": {
+    "swc": true,
+    "files": true,
+    "compilerOptions": {}
+  },
 
+  "compilerOptions": {
     /* Projects */
     "incremental": true /* Enable incremental compilation */,
 
