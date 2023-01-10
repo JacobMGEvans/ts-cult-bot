@@ -21,5 +21,9 @@
   "homepage": "https://github.com/JacobMGEvans/ts-cult-bot#readme",
   "dependencies": {
     "concurrently": "^7.6.0"
-  }
+  },
+  "workspaces": [
+    "bot",
+    "dashboard"
+  ]
 }
