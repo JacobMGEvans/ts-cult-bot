@@ -44,13 +44,16 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
+    id                     String      @id @default(cuid())
+    name                   String?
+    email                  String?     @unique
+    emailVerified          DateTime?
+    image                  String?
+    accounts               Account[]
+    sessions               Session[]
+    jobs                   Jobs[]
+    warningsReceived       Warnings[] @relation(name: "warningsReceived")
+    warningsIssued         Warnings[] @relation(name: "warningsIssued")
 }
 
 model VerificationToken {
@@ -59,4 +62,51 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Jobs {
+   id             String   @id @default(cuid())
+   title          String
+   description    String
+   application    String
+   userId         String
+   user           User     @relation(fields: [userId], references: [id])
+   dateAdded      DateTime @default(now())
+}
+
+model Warnings {
+   id             String   @id @default(cuid())
+   userId         String
+   user           User     @relation(fields: [userId], references: [id], name: "warningsReceived")
+   adminId        String
+   admin          User     @relation(fields: [adminId], references: [id], name: "warningsIssued")
+   reason         String
+   dateAdded      DateTime @default(now())
+}
+
+model ResourceType {
+   id          String   @id @default(cuid())
+   name        String
+   tags        Tags[]
+}
+
+model Tags {
+   id             String @id @default(cuid())
+   name           String
+   resourceTypes  ResourceType[]
+   resources      Resource[]
+}
+
+model Resource {
+   id          String @id @default(cuid())
+   name        String
+   Link        String
+   tags        Tags[]
+   dateAdded   DateTime @default(now())
+   updatedAt   DateTime @updatedAt
+}
+
+model Theoisms {
+   id       String @id @default(cuid())
+   theoism  String
 }
