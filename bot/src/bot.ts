@@ -1,8 +1,8 @@
 import { Client } from "discord.js";
 import * as dotenv from "dotenv";
-dotenv.config();
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
+dotenv.config();
 
 console.log("Starting TS-Cult-Bot");
 
