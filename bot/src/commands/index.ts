@@ -1,4 +1,4 @@
 import { Command } from '../command';
-import { Hello } from './hello';
+import { CreateJobPosting } from './create-job-posting';
 
-export const Commands: Command[] = [Hello]
+export const Commands: Command[] = [CreateJobPosting]
