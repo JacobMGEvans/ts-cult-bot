@@ -1,15 +1,16 @@
-import {
+import type {
   CommandInteraction,
   Client,
+  ModalActionRowComponentBuilder,
+} from "discord.js";
+import {
   ApplicationCommandType,
   ModalBuilder,
   TextInputStyle,
   TextInputBuilder,
   ActionRowBuilder,
-  ModalActionRowComponentBuilder,
-  Events,
 } from "discord.js";
-import { Command } from "../command";
+import type { Command } from "../command";
 
 export const CreateJobPosting: Command = {
   name: "create-job-posting",
