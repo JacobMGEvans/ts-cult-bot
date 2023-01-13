@@ -18,7 +18,7 @@ export const CreateJobPosting: Command = {
   type: ApplicationCommandType.ChatInput,
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   run: async (_client: Client, interaction: CommandInteraction) => {
-    // if (interaction.commandName === 'create-job-posting') {
+    if (!interaction.isChatInputCommand()) return;
 
     // Create the modal
     const modal = new ModalBuilder()
@@ -37,14 +37,18 @@ export const CreateJobPosting: Command = {
 
     modal.addComponents(firstTextActionRow);
 
-    await interaction.showModal(modal);
+    if (!interaction.replied && !interaction.deferred) {
+      await interaction.showModal(modal);
 
-    // if ((interaction as any).customId === 'myModal') {
-    //     await interaction.reply({ content: 'Your submission was received successfully!' });
-    // }
-    // await interaction.followUp({
-    //     ephemeral: true,
-    //     content
-    // });
+      await interaction
+        .awaitModalSubmit({ time: 10000 })
+        .then(async (modalData) => {
+          if (modalData.customId === "myModal") {
+            await interaction.reply({
+              content: "Your submission was received successfully!",
+            });
+          }
+        });
+    }
   },
 };

@@ -10,8 +10,8 @@ console.log("Starting TS-Cult-Bot");
 const token = process.env.DISCORD_TOKEN;
 
 // test for missing environment variables
-const missingEnvVars: string[] = []
-const checkEnvVar = (envVar:string|undefined, name:string) => {
+const missingEnvVars: string[] = [];
+const checkEnvVar = (envVar: string | undefined, name: string) => {
   if (!envVar) missingEnvVars.push(name);
 };
 checkEnvVar(token, "DISCORD_TOKEN");
@@ -23,12 +23,11 @@ if (missingEnvVars.length > 0) {
   );
 }
 
-
 const client = new Client({
-    intents: []
+  intents: [],
 });
 
 ready(client);
 interactionCreate(client);
 
-client.login(token)
+void client.login(token);
