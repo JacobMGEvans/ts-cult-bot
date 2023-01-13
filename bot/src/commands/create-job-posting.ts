@@ -25,17 +25,39 @@ export const CreateJobPosting: Command = {
       .setCustomId("myModal")
       .setTitle("Create Job Posting");
 
+    const jobTitle = new TextInputBuilder()
+      .setCustomId("jobTitle")
+      .setLabel("Job Title")
+      .setStyle(TextInputStyle.Short);
+
+    const contactMethod = new TextInputBuilder()
+      .setCustomId("contactMethod")
+      .setLabel("Contact Method")
+      .setStyle(TextInputStyle.Short);
+
     const jobDescription = new TextInputBuilder()
       .setCustomId("jobDescription")
-      .setLabel("Describe the job for the posting.")
+      .setLabel("Job Description")
       .setStyle(TextInputStyle.Paragraph);
 
     const firstTextActionRow =
-      new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(
+      new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
+        jobTitle
+      );
+    const secondTextActionRow =
+      new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
+        contactMethod
+      );
+    const thirdTextActionRow =
+      new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
         jobDescription
       );
 
-    modal.addComponents(firstTextActionRow);
+    modal.setComponents(
+      firstTextActionRow,
+      secondTextActionRow,
+      thirdTextActionRow
+    );
 
     if (!interaction.replied && !interaction.deferred) {
       await interaction.showModal(modal);
