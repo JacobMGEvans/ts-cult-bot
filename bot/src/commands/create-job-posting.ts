@@ -62,6 +62,7 @@ export const CreateJobPosting: Command = {
     if (!interaction.replied && !interaction.deferred) {
       await interaction.showModal(modal);
       await interaction
+        // 0 seems to give it as much time as it needs
         .awaitModalSubmit({ time: 0 })
         .then(async (modalData) => {
           if (modalData) {
@@ -69,8 +70,7 @@ export const CreateJobPosting: Command = {
 
             console.log({ user, fields });
 
-            await modalData.deferReply();
-            await interaction.followUp({
+            await modalData.editReply({
               content: `Thanks ${user} for submitting! ${JSON.stringify(
                 fields
               )}`,
