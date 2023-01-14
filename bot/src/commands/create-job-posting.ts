@@ -10,7 +10,10 @@ import {
   TextInputBuilder,
   ActionRowBuilder,
 } from "discord.js";
+import { PrismaClient, Prisma } from "@prisma/client";
 import type { Command } from "../command";
+
+const prisma = new PrismaClient();
 
 export const CreateJobPosting: Command = {
   name: "create-job-posting",
@@ -26,16 +29,19 @@ export const CreateJobPosting: Command = {
       .setTitle("Create Job Posting");
 
     const jobTitle = new TextInputBuilder()
+      .setRequired(true)
       .setCustomId("jobTitle")
       .setLabel("Job Title")
       .setStyle(TextInputStyle.Short);
 
     const contactMethod = new TextInputBuilder()
+      .setRequired(true)
       .setCustomId("contactMethod")
       .setLabel("Contact Method")
       .setStyle(TextInputStyle.Short);
 
     const jobDescription = new TextInputBuilder()
+      .setRequired(true)
       .setCustomId("jobDescription")
       .setLabel("Job Description")
       .setStyle(TextInputStyle.Paragraph);
@@ -69,11 +75,20 @@ export const CreateJobPosting: Command = {
             const { user, fields } = modalData;
 
             console.log({ user, fields });
+            prisma.jobs.create({
+              data: {
+                user: user,
+                title: fields.fields.get("jobTitle"),
+                contactMethod: fields.fields.get("contactMethod"),
+                description: fields.fields.get("jobDescription"),
+              },
+            });
+
             // The initial interaction is the slash command that triggered the modal, editting replaces the "is thinking..." message
             await modalData.deferReply();
             await modalData.editReply({
               content: `Thanks ${user} for submitting! ${JSON.stringify(
-                fields
+                fields.fields.get("jobTitle")
               )}`,
             });
           }
