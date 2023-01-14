@@ -77,10 +77,18 @@ export const CreateJobPosting: Command = {
             console.log({ user, fields });
             prisma.jobs.create({
               data: {
-                user: user,
-                title: fields.fields.get("jobTitle"),
-                contactMethod: fields.fields.get("contactMethod"),
-                description: fields.fields.get("jobDescription"),
+                user: {  
+                  name: user.username,
+                  email: user.
+                  emailVerified: user,
+                  image    : user.avatar
+                  // accounts               Account[]
+                  // sessions               Session[]
+                  // jobs                   Jobs[]
+                   },
+                title: fields.fields.get("jobTitle")?.value,
+                contactMethod: fields.fields.get("contactMethod").value,
+                description: fields.fields.get("jobDescription").value,
               },
             });
 
