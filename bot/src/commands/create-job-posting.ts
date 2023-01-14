@@ -61,13 +61,19 @@ export const CreateJobPosting: Command = {
 
     if (!interaction.replied && !interaction.deferred) {
       await interaction.showModal(modal);
-
       await interaction
-        .awaitModalSubmit({ time: 10000 })
+        .awaitModalSubmit({ time: 0 })
         .then(async (modalData) => {
-          if (modalData.customId === "myModal") {
-            await interaction.reply({
-              content: "Your submission was received successfully!",
+          if (modalData) {
+            const { user, fields } = modalData;
+
+            console.log({ user, fields });
+
+            await modalData.deferReply();
+            await interaction.followUp({
+              content: `Thanks ${user} for submitting! ${JSON.stringify(
+                fields
+              )}`,
             });
           }
         });
