@@ -70,6 +70,7 @@ export const CreateJobPosting: Command = {
 
             console.log({ user, fields });
             // The initial interaction is the slash command that triggered the modal, editting replaces the "is thinking..." message
+            await modalData.deferReply();
             await modalData.editReply({
               content: `Thanks ${user} for submitting! ${JSON.stringify(
                 fields
