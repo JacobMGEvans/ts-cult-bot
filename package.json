@@ -6,7 +6,8 @@
   "scripts": {
     "bot": "npm start --prefix bot",
     "dashboard": "npm run dev --prefix dashboard",
-    "dev": "concurrently \"npm run bot\" \"npm run dashboard\" ",
+    "copy-env": "copyfiles .env dashboard/",
+    "dev": "npm run copy-env && concurrently \"npm run bot\" \"npm run dashboard\" ",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,7 +21,8 @@
   },
   "homepage": "https://github.com/JacobMGEvans/ts-cult-bot#readme",
   "dependencies": {
-    "concurrently": "^7.6.0"
+    "concurrently": "^7.6.0",
+    "copyfiles": "^2.4.1"
   },
   "workspaces": [
     "bot",
