@@ -10,7 +10,7 @@ import {
   TextInputBuilder,
   ActionRowBuilder,
 } from "discord.js";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import type { Command } from "../command";
 
 const prisma = new PrismaClient();
@@ -73,22 +73,27 @@ export const CreateJobPosting: Command = {
         .then(async (modalData) => {
           if (modalData) {
             const { user, fields } = modalData;
-
             console.log({ user, fields });
-            prisma.jobs.create({
+
+           await prisma.jobs.create({
               data: {
-                user: {  
-                  name: user.username,
-                  email: user.
-                  emailVerified: user,
-                  image    : user.avatar
-                  // accounts               Account[]
-                  // sessions               Session[]
-                  // jobs                   Jobs[]
-                   },
-                title: fields.fields.get("jobTitle")?.value,
-                contactMethod: fields.fields.get("contactMethod").value,
-                description: fields.fields.get("jobDescription").value,
+                title: fields.fields.get("jobTitle")?.value ?? "",
+                description: fields.fields.get("jobDescription")?.value ?? "",
+                application: fields.fields.get("contactMethod")?.value ?? "",
+                dateAdded: new Date(),
+                // contact: fields.fields.get("contactMethod")?.value ?? "",
+                user: {
+                  connect: {
+                    id: user?.id,
+                    // name: user?.username,
+                    // email: "",
+                    // emailVerified: "",
+                    // image: user.avatar,
+                  },
+                },
+              },
+              include: {
+                user: true,
               },
             });
 

@@ -1,5 +1,6 @@
 {
   "name": "typesafe-cult-mod-bot",
+  "author": "Jacob MG Evans and Roy Anger",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,13 +8,13 @@
     "start": "nodemon src/bot.ts",
     "postinstall": "prisma generate",
     "migrate": "prisma migrate dev",
+    "studio": "npx prisma studio",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/JacobMGEvans/ts-cult-bot.git"
   },
-  "author": "Jacob MG Evans and Roy Anger",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/JacobMGEvans/ts-cult-bot/issues"
