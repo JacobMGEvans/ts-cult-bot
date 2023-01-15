@@ -131,8 +131,8 @@ export const ModWarning: Command = {
               content: `⚠️ ${maybeUser} ⚠️ 
               **Mod Message**: ${JSON.stringify(
                 fields.fields.get("messageToOffender")?.value
-              )}!
-              Warning Count: ${warningsByUser.length} 
+              )}
+              **Warning Count**: ${warningsByUser.length} 
               `,
             });
           }
