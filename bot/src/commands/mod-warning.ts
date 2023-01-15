@@ -25,7 +25,7 @@ export const ModWarning: Command = {
     // Create the modal
     const modal = new ModalBuilder()
       .setCustomId("modWarningModalID")
-      .setTitle("Create Job Posting");
+      .setTitle("Warning A User For Server Infraction");
 
     const offendingUser = new TextInputBuilder()
       .setRequired(true)
@@ -74,7 +74,10 @@ export const ModWarning: Command = {
               (user) => user.username === offendingUser
             );
             if (!maybeUser) {
-              throw Error(`User ${offendingUser} not found.`);
+              await interaction.followUp({
+                content: `User ${offendingUser} not found.`,
+              });
+              return;
             }
 
             await prisma.warnings.create({
