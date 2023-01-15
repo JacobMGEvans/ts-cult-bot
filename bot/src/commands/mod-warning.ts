@@ -74,11 +74,43 @@ export const ModWarning: Command = {
               (user) => user.username === offendingUser
             );
             if (!maybeUser) {
-              console.log(`User ${offendingUser} not found.`);
+              throw Error(`User ${offendingUser} not found.`);
             }
 
-            //  prisma.warnings.create({})
+            await prisma.warnings.create({
+              data: {
+                reason: JSON.stringify(fields.fields.get("modNotes")?.value),
+                dateAdded: new Date(),
+                admin: {
+                  connectOrCreate: {
+                    where: {
+                      id: user.id,
+                    },
+                    create: {
+                      id: user.id,
+                      name: user.username,
+                      image: user.avatar,
+                    },
+                  },
+                },
+                user: {
+                  connectOrCreate: {
+                    where: {
+                      id: maybeUser.id,
+                    },
+                    create: {
+                      id: maybeUser.id,
+                      name: maybeUser.username,
+                      image: maybeUser.avatar,
+                    },
+                  },
+                },
+              },
+            });
 
+            const warningsByUser = await prisma.warnings.findMany({
+              where: { userId: maybeUser.id },
+            });
             /**
              * The deferReply keeps the gate open
              * The initial interaction is the slash command that triggered the modal,
@@ -91,7 +123,7 @@ export const ModWarning: Command = {
               **Mod Message**: ${JSON.stringify(
                 fields.fields.get("messageToOffender")?.value
               )}!
-              Warning Count: ${1} 
+              Warning Count: ${warningsByUser.length} 
               `,
             });
           }

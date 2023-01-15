@@ -89,9 +89,6 @@ export const CreateJobPosting: Command = {
                   },
                 },
               },
-              include: {
-                user: true,
-              },
             });
 
             /**
