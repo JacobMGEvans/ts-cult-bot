@@ -5,10 +5,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run prisma && nodemon src/bot.ts",
-    "postinstall": "prisma generate --schema ../dashboard/prisma/schema.prisma",
-    "prisma": "npx prisma generate --schema ../dashboard/prisma/schema.prisma",
+    "copy-prisma": "copyfiles -u 2 ../dashboard/prisma/schema.prisma .",
+    "dev": "npm run prisma-setup && ts-node src/bot.ts",
     "migrate": "prisma migrate dev",
+    "postinstall": "prisma generate",
+    "prisma": "npx prisma generate",
+    "prisma-setup": "npm run copy-prisma && npm run prisma",
+    "start": "npm run prisma && nodemon src/bot.ts",
     "studio": "npx prisma studio",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
