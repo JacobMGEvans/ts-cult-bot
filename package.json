@@ -5,9 +5,12 @@
   "main": "index.js",
   "scripts": {
     "bot": "npm start --prefix bot",
-    "dashboard": "npm run dev --prefix dashboard",
     "copy-env": "copyfiles .env dashboard/",
-    "dev": "npm run copy-env && concurrently \"npm run bot\" \"npm run dashboard\" ",
+    "copy-prisma": "copyfiles -u 1 dashboard/prisma/schema.prisma bot/",
+    "dashboard": "npm run dev --prefix dashboard",
+    "dev": "npm run copy-env && npm run prisma-setup && concurrently \"npm run bot\" \"npm run dashboard\" ",
+    "prisma": "npm run prisma --prefix bot",
+    "prisma-setup": "npm run copy-prisma && npm run prisma",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
