@@ -14,7 +14,7 @@ import type { Command } from "../command";
 import { prisma } from "../bot";
 
 export const ModWarning: Command = {
-  name: "Mod Warning",
+  name: "mod-warning",
   description: "Warn a user for breaking the rules & track their infractions",
   type: ApplicationCommandType.ChatInput,
   defaultMemberPermissions: ["BanMembers", "KickMembers"],
@@ -36,34 +36,30 @@ export const ModWarning: Command = {
     const messageToOffender = new TextInputBuilder()
       .setRequired(true)
       .setCustomId("messageToOffender")
-      .setPlaceholder("<email>@domain.com, Discord DM, etc.")
-      .setLabel("messageToOffender")
+      .setLabel("Message to Offender")
       .setStyle(TextInputStyle.Paragraph);
 
     const modNotes = new TextInputBuilder()
-      .setRequired(true)
       .setCustomId("modNotes")
-      .setLabel("modNotes")
+      .setLabel("Mod Notes/Reason")
+      .setRequired(true)
       .setStyle(TextInputStyle.Paragraph);
 
-    const firstTextActionRow =
-      new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
-        offendingUser
+    const createTextActionRows = (components: TextInputBuilder[]) => {
+      return components.map((component) =>
+        new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
+          component
+        )
       );
-    const secondTextActionRow =
-      new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
-        messageToOffender
-      );
-    const thirdTextActionRow =
-      new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
-        modNotes
-      );
+    };
 
-    modal.setComponents(
-      firstTextActionRow,
-      secondTextActionRow,
-      thirdTextActionRow
-    );
+    const actionRows = createTextActionRows([
+      offendingUser,
+      messageToOffender,
+      modNotes,
+    ]);
+
+    modal.setComponents(actionRows);
 
     if (!interaction.replied && !interaction.deferred) {
       await interaction.showModal(modal);

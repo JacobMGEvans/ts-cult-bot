@@ -45,24 +45,21 @@ export const CreateJobPosting: Command = {
       .setLabel("Job Description")
       .setStyle(TextInputStyle.Paragraph);
 
-    const firstTextActionRow =
-      new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
-        jobTitle
+    const createTextActionRows = (components: TextInputBuilder[]) => {
+      return components.map((component) =>
+        new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
+          component
+        )
       );
-    const secondTextActionRow =
-      new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
-        contactMethod
-      );
-    const thirdTextActionRow =
-      new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
-        jobDescription
-      );
+    };
 
-    modal.setComponents(
-      firstTextActionRow,
-      secondTextActionRow,
-      thirdTextActionRow
-    );
+    const actionRows = createTextActionRows([
+      jobTitle,
+      contactMethod,
+      jobDescription,
+    ]);
+
+    modal.setComponents(actionRows);
 
     if (!interaction.replied && !interaction.deferred) {
       await interaction.showModal(modal);
