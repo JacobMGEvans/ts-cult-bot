@@ -71,12 +71,16 @@ export const ModWarning: Command = {
             const { user, fields } = modalData;
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const offendingUser = fields.fields.get("offendingUser")!.value;
-            const maybeUser = interaction.options.getUser(offendingUser);
+            const guildMember = interaction.guild?.members.cache.find(
+              (member) =>
+                member.user.tag.includes(offendingUser) ||
+                member.id === offendingUser ||
+                member.user.username.includes(offendingUser)
+            );
+            const maybeUser = guildMember?.user;
 
             if (!maybeUser) {
-              await interaction.followUp({
-                content: `User ${offendingUser} not found.`,
-              });
+              await modalData.deferReply();
               return;
             }
 
@@ -92,7 +96,7 @@ export const ModWarning: Command = {
                     create: {
                       id: user.id,
                       name: user.username,
-                      image: user.avatar,
+                      image: user.avatarURL(),
                     },
                   },
                 },
@@ -104,7 +108,7 @@ export const ModWarning: Command = {
                     create: {
                       id: maybeUser.id,
                       name: maybeUser.username,
-                      image: maybeUser.avatar,
+                      image: maybeUser.avatarURL(),
                     },
                   },
                 },

@@ -84,7 +84,7 @@ export const CreateJobPosting: Command = {
                     create: {
                       id: user?.id,
                       name: user?.username,
-                      image: user.avatar,
+                      image: user.avatarURL(),
                     },
                   },
                 },
