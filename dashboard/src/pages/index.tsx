@@ -1,11 +1,13 @@
 import { type NextPage } from "next";
 import Head from "next/head";
+import { signIn, signOut, useSession } from "next-auth/react";
 
-import { api } from "../utils/api";
+import { api } from "@utils/api";
 import { Authbutton } from "../components/AuthButton";
+import Link from 'next/link';
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+   const { data: sessionData } = useSession();
 
   return (
     <>
@@ -26,10 +28,10 @@ const Home: NextPage = () => {
             </p>
           </div>
           <div className="flex flex-col items-center gap-2">
-            {/* <p className="text-2xl text-white">
-              {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-            </p> */}
+            <div className="flex flex-row text-white text-xl gap-8">
+               {sessionData && <Link href="/dashboard" className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20">Dashboard</Link>}
             <Authbutton />
+            </div>
           </div>
         </div>
       </main>
