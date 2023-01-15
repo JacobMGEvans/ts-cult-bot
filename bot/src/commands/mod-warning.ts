@@ -84,9 +84,11 @@ export const ModWarning: Command = {
             await modalData.deferReply();
             await modalData.editReply({
               // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-              content: `Thanks ${user} for submitting job posting ${JSON.stringify(
-                fields.fields.get("jobTitle")?.value
-              )}! Mods will review it shortly.`,
+              content: `⚠️ ${user} ⚠️ Mod Message: ${JSON.stringify(
+                fields.fields.get("messageToOffender")?.value
+              )}!
+              Warning Count: ${1} 
+              `,
             });
           }
         });
