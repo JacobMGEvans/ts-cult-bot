@@ -2,7 +2,10 @@ import { Client } from "discord.js";
 import * as dotenv from "dotenv";
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
+import { PrismaClient } from "@prisma/client";
 dotenv.config();
+
+export const prisma = new PrismaClient();
 
 console.log("Starting TS-Cult-Bot");
 

@@ -13,49 +13,50 @@ import {
 import type { Command } from "../command";
 import { prisma } from "../bot";
 
-export const CreateJobPosting: Command = {
-  name: "create-job-posting",
-  description: "Request posting a job for Mod approval",
+export const ModWarning: Command = {
+  name: "Mod Warning",
+  description: "Warn a user for breaking the rules & track their infractions",
   type: ApplicationCommandType.ChatInput,
+  defaultMemberPermissions: ["BanMembers", "KickMembers"],
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   run: async (_client: Client, interaction: CommandInteraction) => {
     if (!interaction.isChatInputCommand()) return;
 
     // Create the modal
     const modal = new ModalBuilder()
-      .setCustomId("createJobPostingModalID")
+      .setCustomId("modWarningModalID")
       .setTitle("Create Job Posting");
 
-    const jobTitle = new TextInputBuilder()
+    const offendingUser = new TextInputBuilder()
       .setRequired(true)
-      .setCustomId("jobTitle")
-      .setLabel("Job Title")
+      .setCustomId("offendingUser")
+      .setLabel("Offending User")
       .setStyle(TextInputStyle.Short);
 
-    const contactMethod = new TextInputBuilder()
+    const messageToOffender = new TextInputBuilder()
       .setRequired(true)
+      .setCustomId("messageToOffender")
       .setPlaceholder("<email>@domain.com, Discord DM, etc.")
-      .setCustomId("contactMethod")
-      .setLabel("Contact Method")
-      .setStyle(TextInputStyle.Short);
+      .setLabel("messageToOffender")
+      .setStyle(TextInputStyle.Paragraph);
 
-    const jobDescription = new TextInputBuilder()
+    const modNotes = new TextInputBuilder()
       .setRequired(true)
-      .setCustomId("jobDescription")
-      .setLabel("Job Description")
+      .setCustomId("modNotes")
+      .setLabel("modNotes")
       .setStyle(TextInputStyle.Paragraph);
 
     const firstTextActionRow =
       new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
-        jobTitle
+        offendingUser
       );
     const secondTextActionRow =
       new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
-        contactMethod
+        messageToOffender
       );
     const thirdTextActionRow =
       new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
-        jobDescription
+        modNotes
       );
 
     modal.setComponents(
@@ -73,29 +74,7 @@ export const CreateJobPosting: Command = {
           if (modalData) {
             const { user, fields } = modalData;
 
-            await prisma.jobs.create({
-              data: {
-                title: fields.fields.get("jobTitle")?.value ?? "",
-                description: fields.fields.get("jobDescription")?.value ?? "",
-                application: fields.fields.get("contactMethod")?.value ?? "",
-                dateAdded: new Date(),
-                user: {
-                  connectOrCreate: {
-                    where: {
-                      id: user.id,
-                    },
-                    create: {
-                      id: user?.id,
-                      name: user?.username,
-                      image: user.avatar,
-                    },
-                  },
-                },
-              },
-              include: {
-                user: true,
-              },
-            });
+            //  prisma.warnings.create({})
 
             // The initial interaction is the slash command that triggered the modal, editting replaces the "is thinking..." message
             await modalData.deferReply({ ephemeral: true });

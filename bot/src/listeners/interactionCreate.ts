@@ -15,7 +15,7 @@ const handleSlashCommand = async (
   interaction: CommandInteraction
 ): Promise<void> => {
   const slashCommand = Commands.find(
-    (command) => command.name === interaction.commandName
+    ({ name }) => name === interaction.commandName
   );
 
   if (!slashCommand) {
