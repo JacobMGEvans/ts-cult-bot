@@ -19,7 +19,7 @@ export const ModWarning: Command = {
   type: ApplicationCommandType.ChatInput,
   defaultMemberPermissions: ["BanMembers", "KickMembers"],
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  run: async (_client: Client, interaction: CommandInteraction) => {
+  run: async (client: Client, interaction: CommandInteraction) => {
     if (!interaction.isChatInputCommand()) return;
 
     // Create the modal
@@ -69,10 +69,10 @@ export const ModWarning: Command = {
         .then(async (modalData) => {
           if (modalData) {
             const { user, fields } = modalData;
-            const offendingUser = fields.fields.get("offendingUser")?.value;
-            const maybeUser = _client.users.cache.find(
-              (user) => user.username === offendingUser
-            );
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const offendingUser = fields.fields.get("offendingUser")!.value;
+            const maybeUser = interaction.options.getUser(offendingUser);
+
             if (!maybeUser) {
               await interaction.followUp({
                 content: `User ${offendingUser} not found.`,
