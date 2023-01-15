@@ -19,13 +19,13 @@ export const ModWarning: Command = {
   type: ApplicationCommandType.ChatInput,
   defaultMemberPermissions: ["BanMembers", "KickMembers"],
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  run: async (_client: Client, interaction: CommandInteraction) => {
+  run: async (client: Client, interaction: CommandInteraction) => {
     if (!interaction.isChatInputCommand()) return;
 
     // Create the modal
     const modal = new ModalBuilder()
       .setCustomId("modWarningModalID")
-      .setTitle("Create Job Posting");
+      .setTitle("Warning A User For Server Infraction");
 
     const offendingUser = new TextInputBuilder()
       .setRequired(true)
@@ -69,12 +69,19 @@ export const ModWarning: Command = {
         .then(async (modalData) => {
           if (modalData) {
             const { user, fields } = modalData;
-            const offendingUser = fields.fields.get("offendingUser")?.value;
-            const maybeUser = _client.users.cache.find(
-              (user) => user.username === offendingUser
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const offendingUser = fields.fields.get("offendingUser")!.value;
+            const guildMember = interaction.guild?.members.cache.find(
+              (member) =>
+                member.user.tag.includes(offendingUser) ||
+                member.id === offendingUser ||
+                member.user.username.includes(offendingUser)
             );
+            const maybeUser = guildMember?.user;
+
             if (!maybeUser) {
-              throw Error(`User ${offendingUser} not found.`);
+              await modalData.deferReply();
+              return;
             }
 
             await prisma.warnings.create({
@@ -89,7 +96,7 @@ export const ModWarning: Command = {
                     create: {
                       id: user.id,
                       name: user.username,
-                      image: user.avatar,
+                      image: user.avatarURL(),
                     },
                   },
                 },
@@ -101,7 +108,7 @@ export const ModWarning: Command = {
                     create: {
                       id: maybeUser.id,
                       name: maybeUser.username,
-                      image: maybeUser.avatar,
+                      image: maybeUser.avatarURL(),
                     },
                   },
                 },
