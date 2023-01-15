@@ -36,6 +36,7 @@ export const CreateJobPosting: Command = {
 
     const contactMethod = new TextInputBuilder()
       .setRequired(true)
+      .setPlaceholder("<email>@domain.com, Discord DM, etc.")
       .setCustomId("contactMethod")
       .setLabel("Contact Method")
       .setStyle(TextInputStyle.Short);
@@ -73,22 +74,23 @@ export const CreateJobPosting: Command = {
         .then(async (modalData) => {
           if (modalData) {
             const { user, fields } = modalData;
-            console.log({ user, fields });
 
-           await prisma.jobs.create({
+            await prisma.jobs.create({
               data: {
                 title: fields.fields.get("jobTitle")?.value ?? "",
                 description: fields.fields.get("jobDescription")?.value ?? "",
                 application: fields.fields.get("contactMethod")?.value ?? "",
                 dateAdded: new Date(),
-                // contact: fields.fields.get("contactMethod")?.value ?? "",
                 user: {
-                  connect: {
-                    id: user?.id,
-                    // name: user?.username,
-                    // email: "",
-                    // emailVerified: "",
-                    // image: user.avatar,
+                  connectOrCreate: {
+                    where: {
+                      id: user.id,
+                    },
+                    create: {
+                      id: user?.id,
+                      name: user?.username,
+                      image: user.avatar,
+                    },
                   },
                 },
               },
@@ -98,11 +100,12 @@ export const CreateJobPosting: Command = {
             });
 
             // The initial interaction is the slash command that triggered the modal, editting replaces the "is thinking..." message
-            await modalData.deferReply();
+            await modalData.deferReply({ ephemeral: true });
             await modalData.editReply({
-              content: `Thanks ${user} for submitting! ${JSON.stringify(
-                fields.fields.get("jobTitle")
-              )}`,
+              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+              content: `Thanks ${user} for submitting job posting ${JSON.stringify(
+                fields.fields.get("jobTitle")?.value
+              )}! Mods will review it shortly.`,
             });
           }
         });
