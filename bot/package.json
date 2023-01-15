@@ -5,8 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/bot.ts",
-    "postinstall": "prisma generate",
+    "start": "npm run prisma && nodemon src/bot.ts",
+    "postinstall": "prisma generate --schema ../dashboard/prisma/schema.prisma",
     "prisma": "npx prisma generate --schema ../dashboard/prisma/schema.prisma",
     "migrate": "prisma migrate dev",
     "studio": "npx prisma studio",
