@@ -22,28 +22,35 @@ export const ModWarning: Command = {
   run: async (client: Client, interaction: CommandInteraction) => {
     if (!interaction.isChatInputCommand()) return;
 
-    // Create the modal
+    const textInputsConfig = [
+      {
+        id: "offendingUser",
+        label: "Offending User",
+        style: TextInputStyle.Short,
+      },
+      {
+        id: "messageToOffender",
+        label: "Message to Offender",
+        style: TextInputStyle.Paragraph,
+      },
+      {
+        id: "modNotes",
+        label: "Mod Notes/Reason",
+        style: TextInputStyle.Paragraph,
+      },
+    ];
+
     const modal = new ModalBuilder()
       .setCustomId("modWarningModalID")
       .setTitle("Warning A User For Server Infraction");
 
-    const offendingUser = new TextInputBuilder()
-      .setRequired(true)
-      .setCustomId("offendingUser")
-      .setLabel("Offending User")
-      .setStyle(TextInputStyle.Short);
-
-    const messageToOffender = new TextInputBuilder()
-      .setRequired(true)
-      .setCustomId("messageToOffender")
-      .setLabel("Message to Offender")
-      .setStyle(TextInputStyle.Paragraph);
-
-    const modNotes = new TextInputBuilder()
-      .setCustomId("modNotes")
-      .setLabel("Mod Notes/Reason")
-      .setRequired(true)
-      .setStyle(TextInputStyle.Paragraph);
+    const textInputsBuilt = textInputsConfig.map(({ id, label, style }) => {
+      return new TextInputBuilder()
+        .setCustomId(id)
+        .setLabel(label)
+        .setStyle(style)
+        .setRequired(true);
+    });
 
     const createTextActionRows = (components: TextInputBuilder[]) => {
       return components.map((component) =>
@@ -53,11 +60,7 @@ export const ModWarning: Command = {
       );
     };
 
-    const actionRows = createTextActionRows([
-      offendingUser,
-      messageToOffender,
-      modNotes,
-    ]);
+    const actionRows = createTextActionRows(textInputsBuilt);
 
     modal.setComponents(actionRows);
 
