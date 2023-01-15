@@ -49,11 +49,13 @@ model User {
     email                  String?     @unique
     emailVerified          DateTime?
     image                  String?
+    roleId                 String      @default("clcx2ps6e0000g74ooq6qr1f1")
     accounts               Account[]
     sessions               Session[]
     jobs                   Jobs[]
-    warningsReceived       Warnings[] @relation(name: "warningsReceived")
-    warningsIssued         Warnings[] @relation(name: "warningsIssued")
+    role                   Role        @relation(fields: [roleId], references: [id])
+    warningsReceived       Warnings[]  @relation(name: "warningsReceived")
+    warningsIssued         Warnings[]  @relation(name: "warningsIssued")
 }
 
 model VerificationToken {
@@ -62,6 +64,12 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Role {
+      id       String @id @default(cuid())
+      name     String
+      user     User[]
 }
 
 model Jobs {
