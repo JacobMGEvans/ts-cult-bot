@@ -69,6 +69,13 @@ export const ModWarning: Command = {
         .then(async (modalData) => {
           if (modalData) {
             const { user, fields } = modalData;
+            const offendingUser = fields.fields.get("offendingUser")?.value;
+            const maybeUser = _client.users.cache.find(
+              (user) => user.username === offendingUser
+            );
+            if (!maybeUser) {
+              console.log(`User ${offendingUser} not found.`);
+            }
 
             //  prisma.warnings.create({})
 
@@ -80,7 +87,8 @@ export const ModWarning: Command = {
             await modalData.deferReply();
             await modalData.editReply({
               // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-              content: `⚠️ ${user} ⚠️ Mod Message: ${JSON.stringify(
+              content: `⚠️ ${maybeUser} ⚠️ 
+              **Mod Message**: ${JSON.stringify(
                 fields.fields.get("messageToOffender")?.value
               )}!
               Warning Count: ${1} 
