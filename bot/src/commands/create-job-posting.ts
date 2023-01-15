@@ -97,7 +97,11 @@ export const CreateJobPosting: Command = {
               },
             });
 
-            // The initial interaction is the slash command that triggered the modal, editting replaces the "is thinking..." message
+            /**
+             * The deferReply keeps the gate open
+             * The initial interaction is the slash command that triggered the modal,
+             * editting replaces the "is thinking..." message
+             * */
             await modalData.deferReply({ ephemeral: true });
             await modalData.editReply({
               // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
