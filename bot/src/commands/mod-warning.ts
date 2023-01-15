@@ -71,16 +71,18 @@ export const ModWarning: Command = {
             const { user, fields } = modalData;
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const offendingUser = fields.fields.get("offendingUser")!.value;
-            const guildMember = interaction.guild?.members.cache.find(
-              (member) =>
-                member.user.tag.includes(offendingUser) ||
-                member.id === offendingUser ||
-                member.user.username.includes(offendingUser)
-            );
-            const maybeUser = guildMember?.user;
+            const guildSearchCollection =
+              await interaction.guild?.members.search({
+                query: offendingUser,
+              });
+            const maybeGuild = guildSearchCollection?.first();
+            const maybeUser = maybeGuild?.user;
 
             if (!maybeUser) {
-              await modalData.deferReply();
+              await modalData.deferReply({ ephemeral: true });
+              await modalData.editReply({
+                content: `Error: User ${offendingUser} not found in server member search`,
+              });
               return;
             }
 
