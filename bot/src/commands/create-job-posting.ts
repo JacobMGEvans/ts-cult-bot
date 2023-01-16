@@ -4,6 +4,7 @@ import type {
   ModalActionRowComponentBuilder,
 } from "discord.js";
 import {
+  TextChannel,
   ApplicationCommandType,
   ModalBuilder,
   TextInputStyle,
@@ -12,13 +13,16 @@ import {
 } from "discord.js";
 import type { Command } from "../command";
 import { prisma } from "../bot";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 export const CreateJobPosting: Command = {
   name: "create-job-posting",
   description: "Request posting a job for Mod approval",
   type: ApplicationCommandType.ChatInput,
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  run: async (_client: Client, interaction: CommandInteraction) => {
+  run: async (client: Client, interaction: CommandInteraction) => {
     if (!interaction.isChatInputCommand()) return;
 
     // Create the modal
@@ -70,7 +74,7 @@ export const CreateJobPosting: Command = {
           if (modalData) {
             const { user, fields } = modalData;
 
-            await prisma.jobs.create({
+            const jobCreationResponse = await prisma.jobs.create({
               data: {
                 title: fields.fields.get("jobTitle")?.value ?? "",
                 description: fields.fields.get("jobDescription")?.value ?? "",
@@ -89,8 +93,40 @@ export const CreateJobPosting: Command = {
                   },
                 },
               },
+              include: {
+                user: true,
+              },
             });
 
+            if (jobCreationResponse) {
+              // In the Mod Channel create a message with a Approve and Deny button (maybe have a datapoint for the decision)
+              const modChannel = await client.channels.fetch(
+                process.env.JOB_POSTS_MODERATION_CHANNEL_ID ?? ""
+              );
+              if (modChannel instanceof TextChannel) {
+                const modMessage = await modChannel.send({
+                  content: `New Job Posting: ${jobCreationResponse.title}`,
+                  embeds: [
+                    {
+                      title: jobCreationResponse.title,
+                      description: jobCreationResponse.description,
+                      fields: [
+                        {
+                          name: "Contact",
+                          value: jobCreationResponse.application,
+                        },
+                        {
+                          name: "User",
+                          value: jobCreationResponse.user.name ?? "",
+                        },
+                      ],
+                    },
+                  ],
+                });
+                await modMessage.react("✅");
+                await modMessage.react("❌");
+              }
+            }
             /**
              * The deferReply keeps the gate open
              * The initial interaction is the slash command that triggered the modal,
