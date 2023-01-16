@@ -4,12 +4,14 @@ import type {
   ModalActionRowComponentBuilder,
 } from "discord.js";
 import {
-  TextChannel,
+  ActionRowBuilder,
   ApplicationCommandType,
+  ButtonBuilder,
+  ButtonStyle,
   ModalBuilder,
+  TextChannel,
   TextInputStyle,
   TextInputBuilder,
-  ActionRowBuilder,
 } from "discord.js";
 import type { Command } from "../command";
 import { prisma } from "../bot";
@@ -32,20 +34,20 @@ export const CreateJobPosting: Command = {
 
     const jobTitle = new TextInputBuilder()
       .setRequired(true)
-      .setCustomId("jobTitle")
+      .setCustomId("jobTitleID")
       .setLabel("Job Title")
       .setStyle(TextInputStyle.Short);
 
     const contactMethod = new TextInputBuilder()
       .setRequired(true)
       .setPlaceholder("<email>@domain.com, Discord DM, etc.")
-      .setCustomId("contactMethod")
+      .setCustomId("contactMethodID")
       .setLabel("Contact Method")
       .setStyle(TextInputStyle.Short);
 
     const jobDescription = new TextInputBuilder()
       .setRequired(true)
-      .setCustomId("jobDescription")
+      .setCustomId("jobDescriptionID")
       .setLabel("Job Description")
       .setStyle(TextInputStyle.Paragraph);
 
@@ -76,9 +78,9 @@ export const CreateJobPosting: Command = {
 
             const jobCreationResponse = await prisma.jobs.create({
               data: {
-                title: fields.fields.get("jobTitle")?.value ?? "",
-                description: fields.fields.get("jobDescription")?.value ?? "",
-                application: fields.fields.get("contactMethod")?.value ?? "",
+                title: fields.fields.get("jobTitleID")?.value ?? "",
+                description: fields.fields.get("jobDescriptionID")?.value ?? "",
+                application: fields.fields.get("contactMethodID")?.value ?? "",
                 dateAdded: new Date(),
                 user: {
                   connectOrCreate: {
@@ -99,12 +101,27 @@ export const CreateJobPosting: Command = {
             });
 
             if (jobCreationResponse) {
+              const rowApprove =
+                new ActionRowBuilder<ButtonBuilder>().addComponents(
+                  new ButtonBuilder()
+                    .setCustomId("rowApproveID")
+                    .setLabel("Appprove")
+                    .setStyle(ButtonStyle.Primary)
+                );
+              const rowDeny =
+                new ActionRowBuilder<ButtonBuilder>().addComponents(
+                  new ButtonBuilder()
+                    .setCustomId("rowDenyID")
+                    .setLabel("Deny")
+                    .setStyle(ButtonStyle.Danger)
+                );
+
               // In the Mod Channel create a message with a Approve and Deny button (maybe have a datapoint for the decision)
               const modChannel = await client.channels.fetch(
                 process.env.JOB_POSTS_MODERATION_CHANNEL_ID ?? ""
               );
               if (modChannel instanceof TextChannel) {
-                const modMessage = await modChannel.send({
+                await modChannel.send({
                   content: `New Job Posting: ${jobCreationResponse.title}`,
                   embeds: [
                     {
@@ -122,9 +139,8 @@ export const CreateJobPosting: Command = {
                       ],
                     },
                   ],
+                  components: [rowApprove, rowDeny],
                 });
-                await modMessage.react("✅");
-                await modMessage.react("❌");
               }
             }
             /**
