@@ -101,14 +101,12 @@ export const CreateJobPosting: Command = {
             });
 
             if (jobCreationResponse) {
-              const rowApproveAndDeny = new ActionRowBuilder<ButtonBuilder>()
-                .addComponents(
+              const rowApproveAndDeny =
+                new ActionRowBuilder<ButtonBuilder>().addComponents(
                   new ButtonBuilder()
                     .setCustomId("rowApproveID")
                     .setLabel("Appprove")
-                    .setStyle(ButtonStyle.Success)
-                )
-                .addComponents(
+                    .setStyle(ButtonStyle.Success),
                   new ButtonBuilder()
                     .setCustomId("rowDenyID")
                     .setLabel("Deny")
