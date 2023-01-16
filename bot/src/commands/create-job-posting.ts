@@ -101,15 +101,14 @@ export const CreateJobPosting: Command = {
             });
 
             if (jobCreationResponse) {
-              const rowApprove =
-                new ActionRowBuilder<ButtonBuilder>().addComponents(
+              const rowApproveAndDeny = new ActionRowBuilder<ButtonBuilder>()
+                .addComponents(
                   new ButtonBuilder()
                     .setCustomId("rowApproveID")
                     .setLabel("Appprove")
-                    .setStyle(ButtonStyle.Primary)
-                );
-              const rowDeny =
-                new ActionRowBuilder<ButtonBuilder>().addComponents(
+                    .setStyle(ButtonStyle.Success)
+                )
+                .addComponents(
                   new ButtonBuilder()
                     .setCustomId("rowDenyID")
                     .setLabel("Deny")
@@ -139,7 +138,7 @@ export const CreateJobPosting: Command = {
                       ],
                     },
                   ],
-                  components: [rowApprove, rowDeny],
+                  components: [rowApproveAndDeny],
                 });
               }
             }
