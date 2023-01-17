@@ -1,4 +1,5 @@
 /* eslint-disable import/no-anonymous-default-export */
+import { prisma } from "../bot";
 import { Commands } from "../commands";
 import type {
   CommandInteraction,
@@ -6,11 +7,9 @@ import type {
   Interaction,
   ButtonInteraction,
 } from "discord.js";
+import { TextChannel, ThreadAutoArchiveDuration } from "discord.js";
 
 export default (client: Client): void => {
-  client.on("debug", (info) => {
-    console.dir(info, { depth: Infinity });
-  });
   client.on("interactionCreate", async (interaction: Interaction) => {
     const modChannel = await client.channels.fetch(
       process.env.JOB_POSTS_MODERATION_CHANNEL_ID ?? ""
@@ -46,22 +45,37 @@ const handleButtonsInModChannel = async (
   client: Client,
   interaction: ButtonInteraction
 ): Promise<void> => {
-  console.dir(interaction, { depth: Infinity });
-  await Promise.resolve();
-  // const collector = message.createMessageComponentCollector({
-  //   componentType: ComponentType.Button,
-  //   time: 15000,
-  // });
+  const messageWithButtonEvent =
+    await interaction.channel?.awaitMessageComponent();
+
+  const isApproved = messageWithButtonEvent?.customId === "rowApproveID";
+  if (isApproved) {
+    const jobID = messageWithButtonEvent?.message.embeds[0].fields.find(
+      (field) => field.name === "Job ID"
+    )?.value;
+    // TODO: Find the job posting in the database and set approved to true when we add that field
+    const approvedJob = await prisma.jobs.findUnique({
+      where: {
+        id: jobID,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    const jobPostingChannel = await client.channels.fetch(
+      process.env.JOB_POSTS_CHANNEL_ID ?? ""
+    );
+    if (jobPostingChannel instanceof TextChannel && approvedJob) {
+      const approvedJobThread = await jobPostingChannel.threads.create({
+        name: approvedJob.title,
+        autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
+      });
+
+      await approvedJobThread.send({
+        content: approvedJob.description,
+      });
+      await approvedJobThread.members.add(approvedJob.user.id);
+    }
+  }
 };
-
-// collector.on("collect", (i) => {
-//   if (i.user.id === interaction.user.id) {
-//     i.reply(`${i.user.id} clicked on the ${i.customId} button.`);
-//   } else {
-//     i.reply({ content: `These buttons aren't for you!`, ephemeral: true });
-//   }
-// });
-
-// collector.on("end", (collected) => {
-//   console.log(`Collected ${collected.size} interactions.`);
-// });
