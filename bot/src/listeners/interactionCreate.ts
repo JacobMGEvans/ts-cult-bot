@@ -53,7 +53,7 @@ const handleButtonsInModChannel = async (
     const jobID = messageWithButtonEvent?.message.embeds[0].fields.find(
       (field) => field.name === "Job ID"
     )?.value;
-    // TODO: Find the job posting in the database and set approved to true when we add that field
+    // TODO: Find the job posting in the database and set approved or denied when we add that field
     const approvedJob = await prisma.jobs.findUnique({
       where: {
         id: jobID,
@@ -70,12 +70,16 @@ const handleButtonsInModChannel = async (
       const approvedJobThread = await jobPostingChannel.threads.create({
         name: approvedJob.title,
         autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
+        startMessage: `
+        Job Title: ${approvedJob.title}
+        Contact: ${approvedJob.application}
+        Description: ${approvedJob.description}
+        `,
       });
 
       await approvedJobThread.send({
-        content: approvedJob.description,
+        content: `<@${approvedJob.user.id}> Your job posting has been approved!`,
       });
-      await approvedJobThread.members.add(approvedJob.user.id);
     }
   }
 };
