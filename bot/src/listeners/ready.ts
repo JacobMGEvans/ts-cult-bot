@@ -1,8 +1,7 @@
-/* eslint-disable import/no-anonymous-default-export */
 import { Commands } from "../commands";
 import type { Client } from "discord.js";
 
-export default (client: Client): void => {
+export function ready(client: Client): void {
   client.on("ready", async () => {
     if (!client.user || !client.application) {
       return;
@@ -14,4 +13,4 @@ export default (client: Client): void => {
 
     console.log(`* - ${client.user.username} is online`);
   });
-};
+}

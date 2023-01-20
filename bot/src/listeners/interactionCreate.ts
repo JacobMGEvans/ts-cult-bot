@@ -1,4 +1,3 @@
-/* eslint-disable import/no-anonymous-default-export */
 import { TextChannel, ThreadAutoArchiveDuration } from "discord.js";
 import { prisma } from "../bot";
 import { Commands } from "../commands";
@@ -10,7 +9,7 @@ import type {
   ButtonInteraction,
 } from "discord.js";
 
-export default (client: Client): void => {
+export function interactionCreate(client: Client): void {
   client.on("interactionCreate", async (interaction: Interaction) => {
     const modChannel = await client.channels.fetch(
       process.env.JOB_POSTS_MODERATION_CHANNEL_ID ?? ""
@@ -24,7 +23,7 @@ export default (client: Client): void => {
       await handleButtonsInModChannel(client, interaction);
     }
   });
-};
+}
 
 const handleSlashCommand = async (
   client: Client,
