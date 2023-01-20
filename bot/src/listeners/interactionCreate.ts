@@ -1,13 +1,14 @@
 /* eslint-disable import/no-anonymous-default-export */
+import { TextChannel, ThreadAutoArchiveDuration } from "discord.js";
 import { prisma } from "../bot";
 import { Commands } from "../commands";
+
 import type {
   CommandInteraction,
   Client,
   Interaction,
   ButtonInteraction,
 } from "discord.js";
-import { TextChannel, ThreadAutoArchiveDuration } from "discord.js";
 
 export default (client: Client): void => {
   client.on("interactionCreate", async (interaction: Interaction) => {
@@ -54,7 +55,7 @@ const handleButtonsInModChannel = async (
     const jobID = messageWithButtonEvent?.message.embeds[0].fields.find(
       (field) => field.name === "Job ID"
     )?.value;
-    // TODO: Find the job posting in the database and set approved or denied when we add that field
+    // TODO: Find the job posting in the database and set approved or denied when we add that status field
     const approvedJob = await prisma.jobs.findUnique({
       where: {
         id: jobID,
@@ -89,11 +90,12 @@ const handleButtonsInModChannel = async (
       }
     }
   }
+
   if (isDenied) {
     const jobID = messageWithButtonEvent?.message.embeds[0].fields.find(
       (field) => field.name === "Job ID"
     )?.value;
-    // TODO: Find the job posting in the database and set denied when we add that field
+    // TODO: Find the job posting in the database and set denied when we add that status field
     const deniedJob = await prisma.jobs.findUnique({
       where: {
         id: jobID,
@@ -102,6 +104,7 @@ const handleButtonsInModChannel = async (
         user: true,
       },
     });
+
     if (deniedJob) {
       await messageWithButtonEvent?.update({
         content: `Job Posting ${deniedJob.title} from <@${deniedJob.user.id}> Denied by <@${interaction.user.id}>`,
