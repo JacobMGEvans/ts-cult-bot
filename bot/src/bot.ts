@@ -4,7 +4,6 @@ import * as dotenv from "dotenv";
 
 import { ready } from "./listeners/ready";
 import { interactionCreate } from "./listeners/interactionCreate";
-import { messages } from "./listeners/messages";
 
 // grab the discord token from the .env.discord file
 // will this work in prod?
@@ -44,6 +43,5 @@ const client = new Client({
 // Start bot & load listeners
 ready(client);
 interactionCreate(client);
-messages(client);
 
 void client.login(DISCORD_TOKEN);
