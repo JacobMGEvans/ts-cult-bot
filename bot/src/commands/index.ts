@@ -1,7 +1,11 @@
 import { CreateJobPosting } from "./create-job-posting";
 import { ModWarning } from "./mod-warning";
-import { QuestionPls } from "./question-pls";
+import { RepostMessage } from "./repost-message";
 
 import type { Command } from "../command";
 
-export const Commands: Command[] = [CreateJobPosting, ModWarning, QuestionPls];
+export const Commands: Command[] = [
+  CreateJobPosting,
+  ModWarning,
+  RepostMessage,
+];

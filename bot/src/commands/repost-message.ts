@@ -10,8 +10,8 @@ import type { CommandInteraction, Client } from "discord.js";
 
 import type { Command } from "../command";
 
-export const QuestionPls: Command = {
-  name: "questionpls",
+export const RepostMessage: Command = {
+  name: "repost-message",
   description:
     "Inform a user that they need to repost their message to the correct channel",
   type: ApplicationCommandType.ChatInput,
