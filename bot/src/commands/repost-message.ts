@@ -13,7 +13,7 @@ import type { Command } from "../command";
 export const RepostMessage: Command = {
   name: "repost-message",
   description:
-    "Inform a user that they need to repost their message to the correct channel",
+    "Inform a user that they need to repost their message to the correct channel, then deletes the message in the current channel",
   type: ApplicationCommandType.ChatInput,
   defaultMemberPermissions: ["BanMembers", "KickMembers"],
   options: [
@@ -44,8 +44,6 @@ export const RepostMessage: Command = {
     const messageID = interaction.options.getString("message")!; // The message object
     const channel = interaction.options.getChannel("channel")!; // The channel object
     const user = interaction.options.getUser("user")!; // The user object
-
-    console.dir(interaction, { depth: Infinity });
 
     await interaction.deferReply({ ephemeral: true });
     // Message the `user` that they need to move their message to the `channel` and the message will be deleted in 5 minutes automatically.
