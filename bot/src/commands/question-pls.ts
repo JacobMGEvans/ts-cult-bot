@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
@@ -11,7 +14,7 @@ import type { Command } from "../command";
 export const QuestionPls: Command = {
   name: "questionpls",
   description:
-    "Inform a user that they should move their message to the correct channel",
+    "Inform a user that they need to repost their message to the correct channel",
   type: ApplicationCommandType.ChatInput,
   defaultMemberPermissions: ["BanMembers", "KickMembers"],
   options: [
@@ -19,30 +22,50 @@ export const QuestionPls: Command = {
       type: ApplicationCommandOptionType.User,
       name: "user",
       description:
-        "Inform this user that they should move their recent message",
+        "Inform this user that they need to repost their recent message",
       required: true,
     },
     {
       type: ApplicationCommandOptionType.Channel,
       name: "channel",
-      description: "The channel that the message needs to move to",
+      description: "The channel that the message needs to reposted to",
       required: true,
     },
     {
       type: ApplicationCommandOptionType.String,
       name: "message",
-      description: "The Message ID that needs to move",
+      description: "The Message ID that needs to repost",
       required: true,
     },
   ],
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   run: async (client: Client, interaction: CommandInteraction) => {
     if (!interaction.isChatInputCommand()) return;
 
-    // Get the information from the replied to message and the user who made the message that was replied to
-    const repliedToMessage = interaction;
-    console.log(repliedToMessage);
+    // Get the information from the options that the MODERATOR provided
+    const messageID = interaction.options.getString("message")!; // The message object
+    const channel = interaction.options.getChannel("channel")!; // The channel object
+    const user = interaction.options.getUser("user")!; // The user object
 
-    await interaction.reply("Hello");
+    console.dir(interaction, { depth: Infinity });
+
+    await interaction.deferReply({ ephemeral: true });
+    // Message the `user` that they need to move their message to the `channel` and the message will be deleted in 5 minutes automatically.
+    await interaction.channel?.messages
+      .fetch(messageID)
+      .then(async (message) => {
+        await message.reply({
+          content: `${user} repost this message to ${channel}, the message in this channel will be deleted in 5 minutes`,
+        });
+
+        // Delete the message in the current channel
+        await new Promise((resolve) =>
+          setTimeout(async () => {
+            await message.delete().then(resolve);
+            // 5 minutes
+          }, 300000)
+        );
+      });
+
+    await interaction.deleteReply();
   },
 };
