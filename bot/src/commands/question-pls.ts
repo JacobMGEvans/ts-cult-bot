@@ -5,7 +5,6 @@ import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
 } from "discord.js";
-import { prisma } from "../bot";
 
 import type { CommandInteraction, Client } from "discord.js";
 
