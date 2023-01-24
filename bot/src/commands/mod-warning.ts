@@ -1,18 +1,20 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
-  CommandInteraction,
-  Client,
-  ModalActionRowComponentBuilder,
   ApplicationCommandOptionType,
-} from "discord.js";
-import {
   ApplicationCommandType,
   ModalBuilder,
   TextInputStyle,
   TextInputBuilder,
   ActionRowBuilder,
 } from "discord.js";
-import type { Command } from "../command";
 import { prisma } from "../bot";
+
+import type {
+  CommandInteraction,
+  Client,
+  ModalActionRowComponentBuilder,
+} from "discord.js";
+import type { Command } from "../command";
 
 export const ModWarning: Command = {
   name: "mod-warning",
@@ -22,8 +24,9 @@ export const ModWarning: Command = {
   options: [
     {
       type: ApplicationCommandOptionType.User,
-      name: "offendingUser",
+      name: "user",
       description: "The user that needs to be warned",
+      required: true,
     },
   ],
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -31,11 +34,6 @@ export const ModWarning: Command = {
     if (!interaction.isChatInputCommand()) return;
 
     const textInputsConfig = [
-      {
-        id: "offendingUser",
-        label: "Offending User",
-        style: TextInputStyle.Short,
-      },
       {
         id: "messageToOffender",
         label: "Message to Offender",
@@ -73,26 +71,19 @@ export const ModWarning: Command = {
     modal.setComponents(actionRows);
 
     if (!interaction.replied && !interaction.deferred) {
+      const user = interaction.options.getUser("user")!; // The user object, option is required
       await interaction.showModal(modal);
       await interaction
         // 0 seems to give it as much time as it needs
         .awaitModalSubmit({ time: 0 })
         .then(async (modalData) => {
           if (modalData) {
-            const { user, fields } = modalData;
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const offendingUser = fields.fields.get("offendingUser")!.value;
-            const guildSearchCollection =
-              await interaction.guild?.members.search({
-                query: offendingUser,
-              });
-            const maybeGuild = guildSearchCollection?.first();
-            const maybeUser = maybeGuild?.user;
+            const { fields } = modalData;
 
-            if (!maybeUser) {
+            if (!user) {
               await modalData.deferReply({ ephemeral: true });
               await modalData.editReply({
-                content: `Error: User ${offendingUser} not found in server member search`,
+                content: `Error: User not found in server member search`,
               });
               return;
             }
@@ -116,12 +107,12 @@ export const ModWarning: Command = {
                 user: {
                   connectOrCreate: {
                     where: {
-                      id: maybeUser.id,
+                      id: user.id,
                     },
                     create: {
-                      id: maybeUser.id,
-                      name: maybeUser.username,
-                      image: maybeUser.avatarURL(),
+                      id: user.id,
+                      name: user.username,
+                      image: user.avatarURL(),
                     },
                   },
                 },
@@ -129,7 +120,7 @@ export const ModWarning: Command = {
             });
 
             const warningsByUser = await prisma.warnings.findMany({
-              where: { userId: maybeUser.id },
+              where: { userId: user.id },
             });
             /**
              * The deferReply keeps the gate open
@@ -139,7 +130,7 @@ export const ModWarning: Command = {
             await modalData.deferReply();
             await modalData.editReply({
               // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-              content: `⚠️ ${maybeUser} ⚠️ 
+              content: `⚠️ ${user} ⚠️ 
               **Mod Message**: ${JSON.stringify(
                 fields.fields.get("messageToOffender")?.value
               )}
