@@ -13,7 +13,7 @@ import type { Command } from "../command";
 export const RepostMessage: Command = {
   name: "repost-message",
   description:
-    "Inform a user that they need to repost their message to the correct channel, then deletes the message in the current channel",
+    "Inform a user to repost their message to a different channel and deletes old one",
   type: ApplicationCommandType.ChatInput,
   defaultMemberPermissions: ["BanMembers", "KickMembers"],
   options: [
@@ -37,7 +37,7 @@ export const RepostMessage: Command = {
       required: true,
     },
   ],
-  run: async (client: Client, interaction: CommandInteraction) => {
+  run: async (_: Client, interaction: CommandInteraction) => {
     if (!interaction.isChatInputCommand()) return;
 
     // Get the information from the options that the MODERATOR provided

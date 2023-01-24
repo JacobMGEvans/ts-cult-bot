@@ -1,7 +1,8 @@
-import type {
+import {
   CommandInteraction,
   Client,
   ModalActionRowComponentBuilder,
+  ApplicationCommandOptionType,
 } from "discord.js";
 import {
   ApplicationCommandType,
@@ -18,6 +19,13 @@ export const ModWarning: Command = {
   description: "Warn a user for breaking the rules & track their infractions",
   type: ApplicationCommandType.ChatInput,
   defaultMemberPermissions: ["BanMembers", "KickMembers"],
+  options: [
+    {
+      type: ApplicationCommandOptionType.User,
+      name: "offendingUser",
+      description: "The user that needs to be warned",
+    },
+  ],
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   run: async (client: Client, interaction: CommandInteraction) => {
     if (!interaction.isChatInputCommand()) return;

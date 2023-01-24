@@ -82,7 +82,7 @@ const handleButtonsInModChannel = async (
       });
       if (isJobThreadCreated) {
         await messageWithButtonEvent?.update({
-          content: `Job Posting ${approvedJob.title} from <@${approvedJob.user.id}> Denied by <@${interaction.user.id}>`,
+          content: `Job Posting ${approvedJob.title} from <@${approvedJob.user.id}> Approved by <@${interaction.user.id}>`,
           embeds: [],
           components: [],
         });
