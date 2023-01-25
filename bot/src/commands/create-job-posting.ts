@@ -4,21 +4,27 @@ import type {
   ModalActionRowComponentBuilder,
 } from "discord.js";
 import {
+  ActionRowBuilder,
   ApplicationCommandType,
+  ButtonBuilder,
+  ButtonStyle,
   ModalBuilder,
+  TextChannel,
   TextInputStyle,
   TextInputBuilder,
-  ActionRowBuilder,
 } from "discord.js";
 import type { Command } from "../command";
 import { prisma } from "../bot";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 export const CreateJobPosting: Command = {
   name: "create-job-posting",
   description: "Request posting a job for Mod approval",
   type: ApplicationCommandType.ChatInput,
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  run: async (_client: Client, interaction: CommandInteraction) => {
+  run: async (client: Client, interaction: CommandInteraction) => {
     if (!interaction.isChatInputCommand()) return;
 
     // Create the modal
@@ -28,20 +34,20 @@ export const CreateJobPosting: Command = {
 
     const jobTitle = new TextInputBuilder()
       .setRequired(true)
-      .setCustomId("jobTitle")
+      .setCustomId("jobTitleID")
       .setLabel("Job Title")
       .setStyle(TextInputStyle.Short);
 
     const contactMethod = new TextInputBuilder()
       .setRequired(true)
       .setPlaceholder("<email>@domain.com, Discord DM, etc.")
-      .setCustomId("contactMethod")
+      .setCustomId("contactMethodID")
       .setLabel("Contact Method")
       .setStyle(TextInputStyle.Short);
 
     const jobDescription = new TextInputBuilder()
       .setRequired(true)
-      .setCustomId("jobDescription")
+      .setCustomId("jobDescriptionID")
       .setLabel("Job Description")
       .setStyle(TextInputStyle.Paragraph);
 
@@ -70,11 +76,11 @@ export const CreateJobPosting: Command = {
           if (modalData) {
             const { user, fields } = modalData;
 
-            await prisma.jobs.create({
+            const jobCreationResponse = await prisma.jobs.create({
               data: {
-                title: fields.fields.get("jobTitle")?.value ?? "",
-                description: fields.fields.get("jobDescription")?.value ?? "",
-                application: fields.fields.get("contactMethod")?.value ?? "",
+                title: fields.fields.get("jobTitleID")?.value ?? "",
+                description: fields.fields.get("jobDescriptionID")?.value ?? "",
+                application: fields.fields.get("contactMethodID")?.value ?? "",
                 dateAdded: new Date(),
                 user: {
                   connectOrCreate: {
@@ -89,8 +95,62 @@ export const CreateJobPosting: Command = {
                   },
                 },
               },
+              include: {
+                user: true,
+              },
             });
 
+            if (jobCreationResponse) {
+              const rowApproveAndDeny =
+                new ActionRowBuilder<ButtonBuilder>().addComponents(
+                  new ButtonBuilder()
+                    .setCustomId("rowApproveID")
+                    .setLabel("Appprove")
+                    .setStyle(ButtonStyle.Success),
+                  new ButtonBuilder()
+                    .setCustomId("rowDenyID")
+                    .setLabel("Deny")
+                    .setStyle(ButtonStyle.Danger)
+                );
+
+              // In the Mod Channel create a message with a Approve and Deny button (maybe have a datapoint for the decision)
+              const modChannel = await client.channels.fetch(
+                process.env.JOB_POSTS_MODERATION_CHANNEL_ID ?? ""
+              );
+              if (modChannel instanceof TextChannel) {
+                await modChannel.send({
+                  content: `New Job Posting: ${jobCreationResponse.title}`,
+                  embeds: [
+                    {
+                      description: jobCreationResponse.description,
+                      fields: [
+                        {
+                          name: "Job Title",
+                          value: jobCreationResponse.title,
+                        },
+                        {
+                          name: "Contact",
+                          value: jobCreationResponse.application,
+                        },
+                        {
+                          name: "User",
+                          value: jobCreationResponse.user.name ?? "",
+                        },
+                        {
+                          name: "Date Applied",
+                          value: jobCreationResponse.dateAdded.toDateString(),
+                        },
+                        {
+                          name: "Job ID",
+                          value: jobCreationResponse.id, //TODO: Just thinking... How do we want to FIND the job posting to create the thread?
+                        },
+                      ],
+                    },
+                  ],
+                  components: [rowApproveAndDeny],
+                });
+              }
+            }
             /**
              * The deferReply keeps the gate open
              * The initial interaction is the slash command that triggered the modal,

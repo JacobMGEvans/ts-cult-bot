@@ -1,49 +1,62 @@
-import type {
-  CommandInteraction,
-  Client,
-  ModalActionRowComponentBuilder,
-} from "discord.js";
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
+  ApplicationCommandOptionType,
   ApplicationCommandType,
   ModalBuilder,
   TextInputStyle,
   TextInputBuilder,
   ActionRowBuilder,
 } from "discord.js";
-import type { Command } from "../command";
 import { prisma } from "../bot";
+
+import type {
+  CommandInteraction,
+  Client,
+  ModalActionRowComponentBuilder,
+} from "discord.js";
+import type { Command } from "../command";
 
 export const ModWarning: Command = {
   name: "mod-warning",
   description: "Warn a user for breaking the rules & track their infractions",
   type: ApplicationCommandType.ChatInput,
   defaultMemberPermissions: ["BanMembers", "KickMembers"],
+  options: [
+    {
+      type: ApplicationCommandOptionType.User,
+      name: "user",
+      description: "The user that needs to be warned",
+      required: true,
+    },
+  ],
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   run: async (client: Client, interaction: CommandInteraction) => {
     if (!interaction.isChatInputCommand()) return;
 
-    // Create the modal
+    const textInputsConfig = [
+      {
+        id: "messageToOffender",
+        label: "Message to Offender",
+        style: TextInputStyle.Paragraph,
+      },
+      {
+        id: "modNotes",
+        label: "Mod Notes/Reason",
+        style: TextInputStyle.Paragraph,
+      },
+    ];
+
     const modal = new ModalBuilder()
       .setCustomId("modWarningModalID")
       .setTitle("Warning A User For Server Infraction");
 
-    const offendingUser = new TextInputBuilder()
-      .setRequired(true)
-      .setCustomId("offendingUser")
-      .setLabel("Offending User")
-      .setStyle(TextInputStyle.Short);
-
-    const messageToOffender = new TextInputBuilder()
-      .setRequired(true)
-      .setCustomId("messageToOffender")
-      .setLabel("Message to Offender")
-      .setStyle(TextInputStyle.Paragraph);
-
-    const modNotes = new TextInputBuilder()
-      .setCustomId("modNotes")
-      .setLabel("Mod Notes/Reason")
-      .setRequired(true)
-      .setStyle(TextInputStyle.Paragraph);
+    const textInputsBuilt = textInputsConfig.map(({ id, label, style }) => {
+      return new TextInputBuilder()
+        .setCustomId(id)
+        .setLabel(label)
+        .setStyle(style)
+        .setRequired(true);
+    });
 
     const createTextActionRows = (components: TextInputBuilder[]) => {
       return components.map((component) =>
@@ -53,34 +66,25 @@ export const ModWarning: Command = {
       );
     };
 
-    const actionRows = createTextActionRows([
-      offendingUser,
-      messageToOffender,
-      modNotes,
-    ]);
+    const actionRows = createTextActionRows(textInputsBuilt);
 
     modal.setComponents(actionRows);
 
     if (!interaction.replied && !interaction.deferred) {
+      const user = interaction.options.getUser("user")!; // The user object, option is required
       await interaction.showModal(modal);
       await interaction
         // 0 seems to give it as much time as it needs
         .awaitModalSubmit({ time: 0 })
         .then(async (modalData) => {
           if (modalData) {
-            const { user, fields } = modalData;
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const offendingUser = fields.fields.get("offendingUser")!.value;
-            const guildMember = interaction.guild?.members.cache.find(
-              (member) =>
-                member.user.tag.includes(offendingUser) ||
-                member.id === offendingUser ||
-                member.user.username.includes(offendingUser)
-            );
-            const maybeUser = guildMember?.user;
+            const { fields } = modalData;
 
-            if (!maybeUser) {
-              await modalData.deferReply();
+            if (!user) {
+              await modalData.deferReply({ ephemeral: true });
+              await modalData.editReply({
+                content: `Error: User not found in server member search`,
+              });
               return;
             }
 
@@ -103,12 +107,12 @@ export const ModWarning: Command = {
                 user: {
                   connectOrCreate: {
                     where: {
-                      id: maybeUser.id,
+                      id: user.id,
                     },
                     create: {
-                      id: maybeUser.id,
-                      name: maybeUser.username,
-                      image: maybeUser.avatarURL(),
+                      id: user.id,
+                      name: user.username,
+                      image: user.avatarURL(),
                     },
                   },
                 },
@@ -116,7 +120,7 @@ export const ModWarning: Command = {
             });
 
             const warningsByUser = await prisma.warnings.findMany({
-              where: { userId: maybeUser.id },
+              where: { userId: user.id },
             });
             /**
              * The deferReply keeps the gate open
@@ -126,11 +130,11 @@ export const ModWarning: Command = {
             await modalData.deferReply();
             await modalData.editReply({
               // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-              content: `⚠️ ${maybeUser} ⚠️ 
+              content: `⚠️ ${user} ⚠️ 
               **Mod Message**: ${JSON.stringify(
                 fields.fields.get("messageToOffender")?.value
-              )}!
-              Warning Count: ${warningsByUser.length} 
+              )}
+              **Warning Count**: ${warningsByUser.length} 
               `,
             });
           }
