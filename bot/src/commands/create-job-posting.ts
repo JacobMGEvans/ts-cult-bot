@@ -87,10 +87,24 @@ export const CreateJobPosting: Command = {
                     where: {
                       id: user.id,
                     },
+                    // TODO the image is still hackish, but it works for now
+                    // we either need a table for non-webapp users or we need to add a row to the Account table as well
+                    // Account
+                    // -> id: auto created
+                    // -> userId -> id of row from User table
+                    // -> type -> probably can use 'bot-generated'
+                    // -> providerAccountId -> discord id (currently user.id)
+                    // User
+                    // -> id: auto created
+                    // -> name: same as currently
+                    // -> image: see below for URL created, or https://cdn.discordapp.com/avatars/520297539115810826/bb2f0816cf5002fb054cd16bd6f6251a.png
+
                     create: {
                       id: user?.id,
                       name: user?.username,
-                      image: user.avatarURL(),
+                      image: `https://cdn.discordapp.com/avatars/${
+                        user?.id
+                      }/${user.avatarURL()}.png`,
                     },
                   },
                 },
