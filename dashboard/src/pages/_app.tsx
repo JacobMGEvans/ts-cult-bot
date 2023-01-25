@@ -1,31 +1,30 @@
-import { AppProps, type AppType } from "next/app";
-import { SessionProvider } from "next-auth/react";
+import { AppProps, type AppType } from 'next/app';
+import { SessionProvider } from 'next-auth/react';
 
-import { api } from "../utils/api";
+import { api } from '../utils/api';
 
-import "../styles/globals.css";
+import '../styles/globals.css';
 import { NextPage } from 'next';
 
-
 export type NextPageWithLayout = NextPage & {
-	getLayout?: (page: React.ReactElement) => React.ReactNode;
+  getLayout?: (page: React.ReactElement) => React.ReactNode;
 };
 
-export type AppPropsWithLayout = AppProps &{
-   Component: NextPageWithLayout
-}
+export type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
 
 const App = ({
   Component,
   pageProps: { session, ...pageProps },
 }: AppPropsWithLayout) => {
-   const getLayout = Component.getLayout || ((page) => <>{page}</>);
+  const getLayout = Component.getLayout || ((page) => <>{page}</>);
 
   return (
     <SessionProvider session={session}>
-       {getLayout(<Component {...pageProps} />)}
+      {getLayout(<Component {...pageProps} />)}
     </SessionProvider>
   );
 };
 
-export default api.withTRPC(App)
+export default api.withTRPC(App);
