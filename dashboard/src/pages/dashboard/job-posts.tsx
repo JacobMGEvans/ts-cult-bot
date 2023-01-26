@@ -5,10 +5,11 @@ import Head from 'next/head';
 import { useHydratedSession } from '@utils/customHooks';
 import { NextPageWithLayout } from '../_app';
 import { PageLayout } from '@components/PageLayout';
-import Title from '@components/ui/Title';
+import { Title } from '@components/ui/Title';
 import { api } from '@utils/api';
 import dayjs from 'dayjs';
 import clsx from 'clsx';
+import { TableCell, TableRow } from '@components/ui/TableComponents';
 
 const JobPosts: NextPageWithLayout = () => {
   const session = useHydratedSession();
@@ -25,7 +26,7 @@ const JobPosts: NextPageWithLayout = () => {
       <main>
         <div className="flex flex-row items-baseline">
           <div className="grow">
-            <Title type="h1">Warnings</Title>
+            <Title type="h1">Job Posts</Title>
           </div>
           <div className="">
             <form>
@@ -47,32 +48,13 @@ const JobPosts: NextPageWithLayout = () => {
 
             {jobs?.data?.map((job, index) => {
               return (
-                <div className="my-2 flex flex-row" key={job.id}>
-                  <div
-                    className={clsx(
-                      'w-40 px-4 py-2 text-sm',
-                      index % 2 ? 'bg-slate-800' : 'bg-slate-700'
-                    )}
-                  >
-                    {job.user.name}
-                  </div>
-                  <div
-                    className={clsx(
-                      'grow px-4 py-2 text-sm',
-                      index % 2 ? 'bg-slate-800' : 'bg-slate-700'
-                    )}
-                  >
-                    {job.title}
-                  </div>
-                  <div
-                    className={clsx(
-                      'w-40 px-4 py-2 text-sm',
-                      index % 2 ? 'bg-slate-800' : 'bg-slate-700'
-                    )}
-                  >
+                <TableRow key={job.id} index={index}>
+                  <TableCell>{job.user.name}</TableCell>
+                  <TableCell variant="grow">{job.title}</TableCell>
+                  <TableCell>
                     {dayjs(new Date(job.dateAdded)).format('MMM D, YYYY')}
-                  </div>
-                </div>
+                  </TableCell>
+                </TableRow>
               );
             })}
           </div>

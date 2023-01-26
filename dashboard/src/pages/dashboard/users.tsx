@@ -8,7 +8,7 @@ import { PageLayout } from '@components/PageLayout';
 import { api } from '@utils/api';
 import React from 'react';
 import clsx from 'clsx';
-import Title from '@components/ui/Title';
+import { Title } from '@components/ui/Title';
 
 const Users: NextPageWithLayout = () => {
   const session = useHydratedSession();

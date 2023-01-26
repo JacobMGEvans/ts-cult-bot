@@ -7,8 +7,9 @@ import { NextPageWithLayout } from '../_app';
 import { PageLayout } from '@components/PageLayout';
 import { api } from '@utils/api';
 import dayjs from 'dayjs';
-import Title from '@components/ui/Title';
+import { Title } from '@components/ui/Title';
 import clsx from 'clsx';
+import { TableCell, TableRow } from '@components/ui/TableComponents';
 
 const Warnings: NextPageWithLayout = () => {
   const session = useHydratedSession();
@@ -50,40 +51,16 @@ const Warnings: NextPageWithLayout = () => {
 
             {warnings?.data?.map((warning, index) => {
               return (
-                <div className="my-2 flex flex-row" key={warning.id}>
-                  <div
-                    className={clsx(
-                      'w-40 px-4 py-2 text-sm',
-                      index % 2 ? 'bg-slate-800' : 'bg-slate-700'
-                    )}
-                  >
-                    {warning.user.name}
-                  </div>
-                  <div
-                    className={clsx(
-                      'w-40 px-4 py-2 text-sm',
-                      index % 2 ? 'bg-slate-800' : 'bg-slate-700'
-                    )}
-                  >
-                    {warning.adminId}
-                  </div>
-                  <div
-                    className={clsx(
-                      'grow px-4 py-2 text-sm',
-                      index % 2 ? 'bg-slate-800' : 'bg-slate-700'
-                    )}
-                  >
-                    {warning.reason}
-                  </div>
-                  <div
-                    className={clsx(
-                      'w-40 px-4 py-2 text-sm',
-                      index % 2 ? 'bg-slate-800' : 'bg-slate-700'
-                    )}
-                  >
-                    {dayjs(new Date(warning.dateAdded)).format('MMM D, YYYY')}
-                  </div>
-                </div>
+                <>
+                  <TableRow key={warning.id} index={index}>
+                    <TableCell>{warning.user.name}</TableCell>
+                    <TableCell>{warning.adminId}</TableCell>
+                    <TableCell variant="grow">{warning.reason}</TableCell>
+                    <TableCell>
+                      {dayjs(new Date(warning.dateAdded)).format('MMM D, YYYY')}
+                    </TableCell>
+                  </TableRow>
+                </>
               );
             })}
           </div>

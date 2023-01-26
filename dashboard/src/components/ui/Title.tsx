@@ -8,13 +8,13 @@ function includes<S extends string>(
   return (haystack as readonly string[]).includes(needle);
 }
 
-interface Title {
-  children: React.ReactChild | React.ReactChild[];
+interface TitleProps {
+  children: React.ReactNode;
   type: string;
   css?: string;
 }
 
-const Title: React.FC<Title> = ({ children, type, css }) => {
+export const Title: React.FC<TitleProps> = ({ children, type, css }) => {
   const classes: any = {
     h1: 'text-4xl md:text-5xl font-title mt-6 mb-2',
     h2: 'text-3xl md:text-4xl font-sans mt-4 mb-2 text-slate-600',
@@ -34,5 +34,3 @@ const Title: React.FC<Title> = ({ children, type, css }) => {
     </div>
   );
 };
-
-export default Title;
