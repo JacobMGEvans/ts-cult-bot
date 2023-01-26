@@ -8,6 +8,7 @@ import { PageLayout } from '@components/PageLayout';
 import { api } from '@utils/api';
 import dayjs from 'dayjs';
 import Title from '@components/ui/Title';
+import clsx from 'clsx';
 
 const Warnings: NextPageWithLayout = () => {
   const session = useHydratedSession();
@@ -38,25 +39,48 @@ const Warnings: NextPageWithLayout = () => {
             </form>
           </div>
         </div>
-        <div className="p-8 drop-shadow-lg">
-          <div className="mt-10">
+        <div className="mt-10 rounded bg-slate-800 drop-shadow-lg">
+          <div className="py-8">
             <div className="flex flex-row">
-              <div className="w-36">User</div>
-              <div className="w-36">Admin</div>
-              <div className="grow">Reason</div>
-              <div className="w-36">Date</div>
+              <div className="w-40 px-4 py-2">User</div>
+              <div className="w-40 px-4 py-2">Admin</div>
+              <div className="grow px-4 py-2">Reason</div>
+              <div className="w-40 px-4 py-2">Date</div>
             </div>
 
             {warnings?.data?.map((warning, index) => {
-              //   const admin = api.warnings.getAdminName.useQuery({
-              //     id: warning.adminId,
-              //   });
               return (
                 <div className="my-2 flex flex-row" key={warning.id}>
-                  <div className="w-36 text-sm">{warning.user.name}</div>
-                  <div className="w-36 text-sm">{warning.adminId}</div>
-                  <div className="grow text-sm">{warning.reason}</div>
-                  <div className="w-36 text-sm">
+                  <div
+                    className={clsx(
+                      'w-40 px-4 py-2 text-sm',
+                      index % 2 ? 'bg-slate-800' : 'bg-slate-700'
+                    )}
+                  >
+                    {warning.user.name}
+                  </div>
+                  <div
+                    className={clsx(
+                      'w-40 px-4 py-2 text-sm',
+                      index % 2 ? 'bg-slate-800' : 'bg-slate-700'
+                    )}
+                  >
+                    {warning.adminId}
+                  </div>
+                  <div
+                    className={clsx(
+                      'grow px-4 py-2 text-sm',
+                      index % 2 ? 'bg-slate-800' : 'bg-slate-700'
+                    )}
+                  >
+                    {warning.reason}
+                  </div>
+                  <div
+                    className={clsx(
+                      'w-40 px-4 py-2 text-sm',
+                      index % 2 ? 'bg-slate-800' : 'bg-slate-700'
+                    )}
+                  >
                     {dayjs(new Date(warning.dateAdded)).format('MMM D, YYYY')}
                   </div>
                 </div>
