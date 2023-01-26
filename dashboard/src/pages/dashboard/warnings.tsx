@@ -5,9 +5,16 @@ import Head from 'next/head';
 import { useHydratedSession } from '@utils/customHooks';
 import { NextPageWithLayout } from '../_app';
 import { PageLayout } from '@components/PageLayout';
+import { api } from '@utils/api';
+import dayjs from 'dayjs';
+import Title from '@components/ui/Title';
 
 const Warnings: NextPageWithLayout = () => {
   const session = useHydratedSession();
+
+  const warnings = api.warnings.getAllWarnings.useQuery();
+
+  console.log('warnings', warnings.data);
 
   return (
     <>
@@ -17,7 +24,46 @@ const Warnings: NextPageWithLayout = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <h2>Warnings!</h2>
+        <div className="flex flex-row items-baseline">
+          <div className="grow">
+            <Title type="h1">Warnings</Title>
+          </div>
+          <div className="">
+            <form>
+              <input
+                className="rounded p-1"
+                type="text"
+                placeholder="Search (wip)"
+              />
+            </form>
+          </div>
+        </div>
+        <div className="p-8 drop-shadow-lg">
+          <div className="mt-10">
+            <div className="flex flex-row">
+              <div className="w-36">User</div>
+              <div className="w-36">Admin</div>
+              <div className="grow">Reason</div>
+              <div className="w-36">Date</div>
+            </div>
+
+            {warnings?.data?.map((warning, index) => {
+              //   const admin = api.warnings.getAdminName.useQuery({
+              //     id: warning.adminId,
+              //   });
+              return (
+                <div className="my-2 flex flex-row" key={warning.id}>
+                  <div className="w-36 text-sm">{warning.user.name}</div>
+                  <div className="w-36 text-sm">{warning.adminId}</div>
+                  <div className="grow text-sm">{warning.reason}</div>
+                  <div className="w-36 text-sm">
+                    {dayjs(new Date(warning.dateAdded)).format('MMM D, YYYY')}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </main>
     </>
   );

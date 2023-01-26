@@ -1,5 +1,7 @@
 import { AppProps, type AppType } from 'next/app';
 import { SessionProvider } from 'next-auth/react';
+import '@fontsource/cabin';
+import '@fontsource/roboto-condensed';
 
 import { api } from '../utils/api';
 
