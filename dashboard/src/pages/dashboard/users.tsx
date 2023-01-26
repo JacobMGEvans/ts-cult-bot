@@ -14,8 +14,6 @@ const Users: NextPageWithLayout = () => {
 
   const users = api.users.getAllUsers.useQuery();
 
-  console.log('users', users.data);
-
   return (
     <>
       <Head>
@@ -35,9 +33,15 @@ const Users: NextPageWithLayout = () => {
                 index % 2 === 1 && 'bg-slate-600'
               )}
             >
-              {/* <div className="w-16 flex items-center justify-center">
-                     {user.image && <img src={user.image} alt={user.name ? user.name : 'user profile image'} className="rounded-full w-10 h-10" />}
-                  </div> */}
+              <div className="flex w-16 items-center justify-center">
+                {user.image && (
+                  <img
+                    src={user.image}
+                    alt={user.name ? user.name : 'user profile image'}
+                    className="h-10 w-10 rounded-full"
+                  />
+                )}
+              </div>
               <div className="grow px-2">{user.name}</div>
               <div className="flex w-24 justify-center">{user.role.name}</div>
             </div>
