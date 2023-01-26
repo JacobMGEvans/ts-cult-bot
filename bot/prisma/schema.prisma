@@ -118,3 +118,13 @@ model Theoisms {
    id       String @id @default(cuid())
    theoism  String
 }
+
+model DiscordUser {
+   id          String @id @default(cuid())
+   discordId   String
+   name        String?
+   createdAt   DateTime @default(now())
+   updatedAt   DateTime @updatedAt
+   imageId     String?
+   imageURL    String?
+}
