@@ -1,14 +1,16 @@
 import Link from 'next/link';
 import { Authbutton } from './AuthButton';
+import { Title } from './ui/Title';
 
 export const Header: React.FC = () => {
   return (
-    <header className="container flex items-center px-4 py-6">
-      <h1 className="flex-grow text-2xl">
+    <header className="container flex items-baseline px-4 py-6">
+      <Title type="h2">
         <Link href="/dashboard">Dashboard</Link>
-      </h1>
+      </Title>
+
       <nav className="">
-        <ul className="flex flex-row items-center text-xl">
+        <ul className="flex flex-row items-baseline justify-end text-xl">
           <li className="mx-4">
             <Link href="/dashboard/resources">Resources</Link>
           </li>

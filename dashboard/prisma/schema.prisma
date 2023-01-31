@@ -52,9 +52,7 @@ model User {
     roleId                 String      @default("clcx2ps6e0000g74ooq6qr1f1")
     accounts               Account[]
     sessions               Session[]
-    jobs                   Jobs[]
     role                   Role        @relation(fields: [roleId], references: [id])
-    warningsReceived       Warnings[]  @relation(name: "warningsReceived")
     warningsIssued         Warnings[]  @relation(name: "warningsIssued")
 }
 
@@ -73,32 +71,32 @@ model Role {
 }
 
 model Jobs {
-   id             String   @id @default(cuid())
+   id             String         @id @default(cuid())
    title          String
    description    String
    application    String
    userId         String
-   user           User     @relation(fields: [userId], references: [id])
-   dateAdded      DateTime @default(now())
+   user           DiscordUser    @relation(fields: [userId], references: [id])
+   dateAdded      DateTime       @default(now())
 }
 
 model Warnings {
-   id             String   @id @default(cuid())
+   id             String         @id @default(cuid())
    userId         String
-   user           User     @relation(fields: [userId], references: [id], name: "warningsReceived")
+   user           DiscordUser    @relation(fields: [userId], references: [id])
    adminId        String
-   admin          User     @relation(fields: [adminId], references: [id], name: "warningsIssued")
+   admin          User           @relation(fields: [adminId], references: [id], name: "warningsIssued")
    reason         String
-   dateAdded      DateTime @default(now())
+   dateAdded      DateTime       @default(now())
 }
 
 model ResourceType {
    id          String   @id @default(cuid())
    name        String
-   tags        Tags[]
+   tags        TypesOnResources[]
 }
 
-model Tags {
+model TypesOnResources {
    id             String @id @default(cuid())
    name           String
    resourceTypes  ResourceType[]
@@ -109,7 +107,7 @@ model Resource {
    id          String @id @default(cuid())
    name        String
    Link        String
-   tags        Tags[]
+   tags        TypesOnResources[]
    dateAdded   DateTime @default(now())
    updatedAt   DateTime @updatedAt
 }
@@ -120,11 +118,13 @@ model Theoisms {
 }
 
 model DiscordUser {
-   id          String @id @default(cuid())
-   discordId   String
-   name        String?
-   createdAt   DateTime @default(now())
-   updatedAt   DateTime @updatedAt
-   imageId     String?
-   imageURL    String?
+   id                   String @id @default(cuid())
+   discordId            String
+   name                 String?
+   createdAt            DateTime @default(now())
+   updatedAt            DateTime @updatedAt
+   imageId              String?
+   imageURL             String?
+   jobs                 Jobs[]
+   warnings             Warnings[]
 }
