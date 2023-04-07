@@ -44,16 +44,15 @@ model Session {
 }
 
 model User {
-    id                     String      @id @default(cuid())
-    name                   String?
-    email                  String?     @unique
-    emailVerified          DateTime?
-    image                  String?
-    roleId                 String      @default("clcx2ps6e0000g74ooq6qr1f1")
-    accounts               Account[]
-    sessions               Session[]
-    role                   Role        @relation(fields: [roleId], references: [id])
-    warningsIssued         Warnings[]  @relation(name: "warningsIssued")
+    id            String    @id @default(cuid())
+    name          String?
+    email         String?   @unique
+    emailVerified DateTime?
+    image         String?
+    roleId        String    @default("clcx2ps6e0000g74ooq6qr1f1")
+    accounts      Account[]
+    sessions      Session[]
+    role          Role      @relation(fields: [roleId], references: [id])
 }
 
 model VerificationToken {
@@ -65,66 +64,66 @@ model VerificationToken {
 }
 
 model Role {
-      id       String @id @default(cuid())
-      name     String
-      user     User[]
+    id   String @id @default(cuid())
+    name String
+    user User[]
 }
 
 model Jobs {
-   id             String         @id @default(cuid())
-   title          String
-   description    String
-   application    String
-   userId         String
-   user           DiscordUser    @relation(fields: [userId], references: [id])
-   dateAdded      DateTime       @default(now())
+    id          String      @id @default(cuid())
+    title       String
+    description String
+    application String
+    userId      String
+    user        DiscordUser @relation(fields: [userId], references: [id])
+    dateAdded   DateTime    @default(now())
 }
 
 model Warnings {
-   id             String         @id @default(cuid())
-   userId         String
-   user           DiscordUser    @relation(fields: [userId], references: [id])
-   adminId        String
-   admin          User           @relation(fields: [adminId], references: [id], name: "warningsIssued")
-   reason         String
-   dateAdded      DateTime       @default(now())
+    id        String      @id @default(cuid())
+    userId    String
+    adminId   String
+    user      DiscordUser @relation(name: "warnings", fields: [userId], references: [id])
+    admin     DiscordUser @relation(name: "warningsIssued", fields: [adminId], references: [id])
+    reason    String
+    dateAdded DateTime    @default(now())
 }
 
 model ResourceType {
-   id          String   @id @default(cuid())
-   name        String
-   tags        TypesOnResources[]
+    id   String             @id @default(cuid())
+    name String
+    tags TypesOnResources[]
 }
 
 model TypesOnResources {
-   id             String @id @default(cuid())
-   name           String
-   resourceTypes  ResourceType[]
-   resources      Resource[]
+    id            String         @id @default(cuid())
+    name          String
+    resourceTypes ResourceType[]
+    resources     Resource[]
 }
 
 model Resource {
-   id          String @id @default(cuid())
-   name        String
-   Link        String
-   tags        TypesOnResources[]
-   dateAdded   DateTime @default(now())
-   updatedAt   DateTime @updatedAt
+    id        String             @id @default(cuid())
+    name      String
+    Link      String
+    tags      TypesOnResources[]
+    dateAdded DateTime           @default(now())
+    updatedAt DateTime           @updatedAt
 }
 
 model Theoisms {
-   id       String @id @default(cuid())
-   theoism  String
+    id      String @id @default(cuid())
+    theoism String
 }
 
 model DiscordUser {
-   id                   String @id @default(cuid())
-   discordId            String
-   name                 String?
-   createdAt            DateTime @default(now())
-   updatedAt            DateTime @updatedAt
-   imageId              String?
-   imageURL             String?
-   jobs                 Jobs[]
-   warnings             Warnings[]
+    id             String     @id @unique
+    name           String?
+    createdAt      DateTime   @default(now())
+    updatedAt      DateTime   @updatedAt
+    imageId        String?
+    imageURL       String?
+    jobs           Jobs[]
+    warnings       Warnings[] @relation("warnings")
+    warningsIssued Warnings[] @relation("warningsIssued")
 }

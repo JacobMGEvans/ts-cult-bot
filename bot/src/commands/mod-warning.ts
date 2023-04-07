@@ -100,7 +100,7 @@ export const ModWarning: Command = {
                     create: {
                       id: user.id,
                       name: user.username,
-                      image: user.avatarURL(),
+                      imageURL: user.avatarURL(),
                     },
                   },
                 },
@@ -112,7 +112,7 @@ export const ModWarning: Command = {
                     create: {
                       id: user.id,
                       name: user.username,
-                      image: user.avatarURL(),
+                      imageURL: user.avatarURL(),
                     },
                   },
                 },
@@ -120,7 +120,7 @@ export const ModWarning: Command = {
             });
 
             const warningsByUser = await prisma.warnings.findMany({
-              where: { userId: user.id },
+              where: { userId: user.id},
             });
             /**
              * The deferReply keeps the gate open
@@ -137,8 +137,11 @@ export const ModWarning: Command = {
               **Warning Count**: ${warningsByUser.length} 
               `,
             });
+            
           }
         });
+    } else {
+      return
     }
   },
 };

@@ -102,7 +102,7 @@ export const CreateJobPosting: Command = {
                     create: {
                       id: user?.id,
                       name: user?.username,
-                      image: `https://cdn.discordapp.com/avatars/${
+                      imageURL: `https://cdn.discordapp.com/avatars/${
                         user?.id
                       }/${user.avatarURL()}.png`,
                     },
