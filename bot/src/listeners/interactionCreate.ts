@@ -7,10 +7,12 @@ import type {
   Client,
   Interaction,
   ButtonInteraction,
+  GuildMember,
 } from "discord.js";
 
 export function interactionCreate(client: Client): void {
   client.on("interactionCreate", async (interaction: Interaction) => {
+    
     const modChannel = await client.channels.fetch(
       process.env.JOB_POSTS_MODERATION_CHANNEL_ID ?? ""
     );
@@ -45,8 +47,13 @@ const handleButtonsInModChannel = async (
   client: Client,
   interaction: ButtonInteraction
 ): Promise<void> => {
+  interaction.deferUpdate();
   const messageWithButtonEvent =
     await interaction.channel?.awaitMessageComponent();
+
+    //only allow mods to approve or deny
+  const member = interaction.member as GuildMember;
+  if (!member.permissions.has("BanMembers")) return;
 
   const isApproved = messageWithButtonEvent?.customId === "rowApproveID";
   const isDenied = messageWithButtonEvent?.customId === "rowDenyID";

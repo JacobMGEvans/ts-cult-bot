@@ -156,7 +156,7 @@ export const CreateJobPosting: Command = {
                         },
                         {
                           name: "Job ID",
-                          value: jobCreationResponse.id, //TODO: Just thinking... How do we want to FIND the job posting to create the thread?
+                          value: jobCreationResponse.id, 
                         },
                       ],
                     },
