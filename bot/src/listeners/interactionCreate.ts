@@ -61,7 +61,7 @@ const handleButtonsInModChannel = async (
     const jobID = messageWithButtonEvent?.message.embeds[0].fields.find(
       (field) => field.name === "Job ID"
     )?.value;
-    // TODO: Find the job posting in the database and set approved or denied when we add that status field
+
     const approvedJob = await prisma.jobs.findUnique({
       where: {
         id: jobID,
@@ -75,6 +75,15 @@ const handleButtonsInModChannel = async (
       process.env.JOB_POSTS_CHANNEL_ID ?? ""
     );
     if (jobPostingChannel instanceof TextChannel && approvedJob) {
+      await prisma.jobs.update({
+        where: {
+          id: jobID,
+        },
+        data: {
+          status: "approved",
+        },
+      });
+      
       const approvedJobThread = await jobPostingChannel.threads.create({
         name: approvedJob.title,
         autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
@@ -101,7 +110,7 @@ const handleButtonsInModChannel = async (
     const jobID = messageWithButtonEvent?.message.embeds[0].fields.find(
       (field) => field.name === "Job ID"
     )?.value;
-    // TODO: Find the job posting in the database and set denied when we add that status field
+
     const deniedJob = await prisma.jobs.findUnique({
       where: {
         id: jobID,
@@ -112,6 +121,15 @@ const handleButtonsInModChannel = async (
     });
 
     if (deniedJob) {
+      await prisma.jobs.update({
+        where: {
+          id: jobID,
+        },
+        data: {
+          status: "denied",
+        },
+      });
+
       await messageWithButtonEvent?.update({
         content: `Job Posting ${deniedJob.title} from <@${deniedJob.user.id}> Denied by <@${interaction.user.id}>`,
         embeds: [],

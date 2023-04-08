@@ -82,6 +82,7 @@ export const CreateJobPosting: Command = {
                 description: fields.fields.get("jobDescriptionID")?.value ?? "",
                 application: fields.fields.get("contactMethodID")?.value ?? "",
                 dateAdded: new Date(),
+                status: "opened",
                 user: {
                   connectOrCreate: {
                     where: {
@@ -127,7 +128,7 @@ export const CreateJobPosting: Command = {
                     .setStyle(ButtonStyle.Danger)
                 );
 
-              // In the Mod Channel create a message with a Approve and Deny button (maybe have a datapoint for the decision)
+              // In the Mod Channel create a message with a Approve and Deny button
               const modChannel = await client.channels.fetch(
                 process.env.JOB_POSTS_MODERATION_CHANNEL_ID ?? ""
               );
