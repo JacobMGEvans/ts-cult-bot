@@ -4,13 +4,9 @@
   "description": "1. In the parent directory, run `npm i`",
   "main": "index.js",
   "scripts": {
-    "bot": "npm start --prefix bot",
-    "copy-env": "copyfiles .env dashboard/",
-    "copy-prisma": "copyfiles -u 1 dashboard/prisma/schema.prisma bot/",
-    "dashboard": "npm run dev --prefix dashboard",
-    "dev": "npm run copy-env && npm run prisma-setup && concurrently \"npm run bot\" \"npm run dashboard\" ",
-    "prisma": "npm run prisma --prefix bot",
-    "prisma-setup": "npm run copy-prisma && npm run prisma",
+    "dev": "dotenv -- turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{js,ts,jsx,tsx,md}\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,13 +20,9 @@
   },
   "homepage": "https://github.com/JacobMGEvans/ts-cult-bot#readme",
   "dependencies": {
-    "concurrently": "^8.0.1",
-    "copyfiles": "^2.4.1"
+    "copyfiles": "^2.4.1",
+    "dotenv-cli": "^7.2.1"
   },
-  "workspaces": [
-    "bot",
-    "dashboard"
-  ],
   "devDependencies": {
     "prettier": "^2.8.3",
     "prettier-plugin-tailwindcss": "^0.2.2"

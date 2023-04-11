@@ -74,7 +74,7 @@ const handleButtonsInModChannel = async (
       const approvedJobThread = await jobPostingChannel.threads.create({
         name: approvedJob.title,
         autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
-      })
+      });
       const isJobThreadCreated = await approvedJobThread.send({
         content: `<@${approvedJob.user.id}> Your job posting has been approved!
 

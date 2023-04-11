@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Necessary for Next auth
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  roleId        String    @default("clgbvowew000108mjcv970r85")
+  accounts      Account[]
+  sessions      Session[]
+  role          Role      @relation(fields: [roleId], references: [id])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Role {
+  id   String @id @default(cuid())
+  name String
+  user User[]
+}
+
+enum Status {
+  opened
+  approved
+  denied
+  closed
+}
+
+model Jobs {
+  id          String      @id @default(cuid())
+  title       String
+  description String
+  application String
+  userId      String
+  user        DiscordUser @relation(fields: [userId], references: [id])
+  dateAdded   DateTime    @default(now())
+  status      Status      @default(opened)
+}
+
+model Warnings {
+  id        String      @id @default(cuid())
+  userId    String
+  adminId   String
+  user      DiscordUser @relation(name: "warnings", fields: [userId], references: [id])
+  admin     DiscordUser @relation(name: "warningsIssued", fields: [adminId], references: [id])
+  reason    String
+  dateAdded DateTime    @default(now())
+}
+
+model ResourceType {
+  id   String             @id @default(cuid())
+  name String
+  tags TypesOnResources[]
+}
+
+model TypesOnResources {
+  id            String         @id @default(cuid())
+  name          String
+  resourceTypes ResourceType[]
+  resources     Resource[]
+}
+
+model Resource {
+  id        String             @id @default(cuid())
+  name      String
+  Link      String
+  tags      TypesOnResources[]
+  dateAdded DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}
+
+model Theoisms {
+  id      String @id @default(cuid())
+  theoism String
+}
+
+model DiscordUser {
+  id             String     @id @unique
+  name           String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  imageId        String?
+  imageURL       String?
+  jobs           Jobs[]
+  warnings       Warnings[] @relation("warnings")
+  warningsIssued Warnings[] @relation("warningsIssued")
+}

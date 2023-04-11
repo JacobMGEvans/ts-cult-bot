@@ -34,6 +34,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@prisma/client": "^4.12.0"
+    "@prisma/client": "^4.12.0",
+    "tslib": "^2.5.0"
   }
 }

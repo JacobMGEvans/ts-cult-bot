@@ -70,9 +70,9 @@ export const CreateJobPosting: Command = {
     if (!interaction.replied && !interaction.deferred) {
       await interaction.showModal(modal);
       await interaction
-        // The time parameter specifies how long, in milliseconds, 
+        // The time parameter specifies how long, in milliseconds,
         // the library should wait for the user to submit the modal before timing out and rejecting the promise.
-        // 5 minutes 
+        // 5 minutes
         .awaitModalSubmit({ time: 300000 })
         .then(async (modalData) => {
           if (modalData) {
@@ -105,8 +105,9 @@ export const CreateJobPosting: Command = {
                     create: {
                       id: user?.id,
                       name: user?.username,
-                      imageURL: `https://cdn.discordapp.com/avatars/${user?.id
-                        }/${user.avatarURL()}.png`,
+                      imageURL: `https://cdn.discordapp.com/avatars/${
+                        user?.id
+                      }/${user.avatarURL()}.png`,
                     },
                   },
                 },
