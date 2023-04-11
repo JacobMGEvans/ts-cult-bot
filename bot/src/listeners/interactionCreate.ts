@@ -1,8 +1,10 @@
 import {
-  TextChannel, ThreadAutoArchiveDuration, CommandInteraction,
+  TextChannel,
+  ThreadAutoArchiveDuration,
+  CommandInteraction,
   Client,
   Interaction,
-  ButtonInteraction
+  ButtonInteraction,
 } from "discord.js";
 import { prisma } from "../bot";
 import { Commands } from "../commands";
@@ -43,15 +45,15 @@ const handleButtonsInModChannel = async (
   client: Client,
   interaction: ButtonInteraction
 ): Promise<void> => {
-  if (interaction.channel === null || interaction.replied) return
-  const messageWithButtonEvent = await interaction.channel?.awaitMessageComponent();
+  if (interaction.channel === null || interaction.replied) return;
 
+  const messageWithButtonEvent =
+    await interaction.channel.awaitMessageComponent();
 
-  if (!messageWithButtonEvent) return
+  if (!messageWithButtonEvent) return;
   const isApproved = messageWithButtonEvent?.customId === "rowApproveID";
   const isDenied = messageWithButtonEvent?.customId === "rowDenyID";
   if (isApproved) {
-    await messageWithButtonEvent.deferUpdate();
     const jobID = messageWithButtonEvent?.message.embeds[0].fields.find(
       (field) => field.name === "Job ID"
     )?.value;
@@ -69,19 +71,10 @@ const handleButtonsInModChannel = async (
       process.env.JOB_POSTS_CHANNEL_ID ?? ""
     );
     if (jobPostingChannel instanceof TextChannel && approvedJob) {
-      await prisma.jobs.update({
-        where: {
-          id: jobID,
-        },
-        data: {
-          status: "approved",
-        },
-      });
-
       const approvedJobThread = await jobPostingChannel.threads.create({
         name: approvedJob.title,
         autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
-      });
+      })
       const isJobThreadCreated = await approvedJobThread.send({
         content: `<@${approvedJob.user.id}> Your job posting has been approved!
 
@@ -90,18 +83,25 @@ const handleButtonsInModChannel = async (
         **Description:** ${approvedJob.description}
         `,
       });
-      if (isJobThreadCreated) {
+      if (Boolean(isJobThreadCreated)) {
         await messageWithButtonEvent?.update({
           content: `Job Posting ${approvedJob.title} from <@${approvedJob.user.id}> Approved by <@${interaction.user.id}>`,
           embeds: [],
           components: [],
+        });
+        await prisma.jobs.update({
+          where: {
+            id: jobID,
+          },
+          data: {
+            status: "approved",
+          },
         });
       }
     }
   }
 
   if (isDenied) {
-    await messageWithButtonEvent.deferUpdate();
     const jobID = messageWithButtonEvent?.message.embeds[0].fields.find(
       (field) => field.name === "Job ID"
     )?.value;
@@ -116,6 +116,11 @@ const handleButtonsInModChannel = async (
     });
 
     if (deniedJob) {
+      await messageWithButtonEvent?.update({
+        content: `Button: Job Posting ${deniedJob.title} from <@${deniedJob.user.id}> Denied by <@${interaction.user.id}>`,
+        embeds: [],
+        components: [],
+      });
       await prisma.jobs.update({
         where: {
           id: jobID,
@@ -124,14 +129,6 @@ const handleButtonsInModChannel = async (
           status: "denied",
         },
       });
-
-      await messageWithButtonEvent?.update({
-        content: `Button: Job Posting ${deniedJob.title} from <@${deniedJob.user.id}> Denied by <@${interaction.user.id}>`,
-        embeds: [],
-        components: [],
-      });
     }
   }
-
-
 };
