@@ -70,8 +70,10 @@ export const CreateJobPosting: Command = {
     if (!interaction.replied && !interaction.deferred) {
       await interaction.showModal(modal);
       await interaction
-        // 0 seems to give it as much time as it needs
-        .awaitModalSubmit({ time: 0 })
+        // The time parameter specifies how long, in milliseconds, 
+        // the library should wait for the user to submit the modal before timing out and rejecting the promise.
+        // 5 minutes 
+        .awaitModalSubmit({ time: 300000 })
         .then(async (modalData) => {
           if (modalData) {
             const { user, fields } = modalData;
@@ -103,9 +105,8 @@ export const CreateJobPosting: Command = {
                     create: {
                       id: user?.id,
                       name: user?.username,
-                      imageURL: `https://cdn.discordapp.com/avatars/${
-                        user?.id
-                      }/${user.avatarURL()}.png`,
+                      imageURL: `https://cdn.discordapp.com/avatars/${user?.id
+                        }/${user.avatarURL()}.png`,
                     },
                   },
                 },
@@ -157,7 +158,7 @@ export const CreateJobPosting: Command = {
                         },
                         {
                           name: "Job ID",
-                          value: jobCreationResponse.id, 
+                          value: jobCreationResponse.id,
                         },
                       ],
                     },
@@ -175,7 +176,7 @@ export const CreateJobPosting: Command = {
             await modalData.editReply({
               // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
               content: `Thanks ${user} for submitting job posting ${JSON.stringify(
-                fields.fields.get("jobTitle")?.value
+                jobCreationResponse.title
               )}! Mods will review it shortly.`,
             });
           }

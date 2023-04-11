@@ -1,18 +1,14 @@
-import { TextChannel, ThreadAutoArchiveDuration } from "discord.js";
+import {
+  TextChannel, ThreadAutoArchiveDuration, CommandInteraction,
+  Client,
+  Interaction,
+  ButtonInteraction
+} from "discord.js";
 import { prisma } from "../bot";
 import { Commands } from "../commands";
 
-import type {
-  CommandInteraction,
-  Client,
-  Interaction,
-  ButtonInteraction,
-  GuildMember,
-} from "discord.js";
-
 export function interactionCreate(client: Client): void {
   client.on("interactionCreate", async (interaction: Interaction) => {
-    
     const modChannel = await client.channels.fetch(
       process.env.JOB_POSTS_MODERATION_CHANNEL_ID ?? ""
     );
@@ -47,17 +43,15 @@ const handleButtonsInModChannel = async (
   client: Client,
   interaction: ButtonInteraction
 ): Promise<void> => {
-  interaction.deferUpdate();
-  const messageWithButtonEvent =
-    await interaction.channel?.awaitMessageComponent();
+  if (interaction.channel === null || interaction.replied) return
+  const messageWithButtonEvent = await interaction.channel?.awaitMessageComponent();
 
-    //only allow mods to approve or deny
-  const member = interaction.member as GuildMember;
-  if (!member.permissions.has("BanMembers")) return;
 
+  if (!messageWithButtonEvent) return
   const isApproved = messageWithButtonEvent?.customId === "rowApproveID";
   const isDenied = messageWithButtonEvent?.customId === "rowDenyID";
   if (isApproved) {
+    await messageWithButtonEvent.deferUpdate();
     const jobID = messageWithButtonEvent?.message.embeds[0].fields.find(
       (field) => field.name === "Job ID"
     )?.value;
@@ -83,7 +77,7 @@ const handleButtonsInModChannel = async (
           status: "approved",
         },
       });
-      
+
       const approvedJobThread = await jobPostingChannel.threads.create({
         name: approvedJob.title,
         autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
@@ -107,6 +101,7 @@ const handleButtonsInModChannel = async (
   }
 
   if (isDenied) {
+    await messageWithButtonEvent.deferUpdate();
     const jobID = messageWithButtonEvent?.message.embeds[0].fields.find(
       (field) => field.name === "Job ID"
     )?.value;
@@ -131,11 +126,12 @@ const handleButtonsInModChannel = async (
       });
 
       await messageWithButtonEvent?.update({
-        content: `Job Posting ${deniedJob.title} from <@${deniedJob.user.id}> Denied by <@${interaction.user.id}>`,
+        content: `Button: Job Posting ${deniedJob.title} from <@${deniedJob.user.id}> Denied by <@${interaction.user.id}>`,
         embeds: [],
         components: [],
       });
-      return;
     }
   }
+
+
 };
