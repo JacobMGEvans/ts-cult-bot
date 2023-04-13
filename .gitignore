@@ -213,3 +213,7 @@ dist
 # wrangler project
 
 .dev.vars
+
+## Turbo Repo
+
+.turbo
