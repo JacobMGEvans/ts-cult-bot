@@ -1,7 +1,7 @@
 {
   "name": "ts-cult-bot",
   "version": "1.0.0",
-  "description": "1. In the parent directory, run `npm i`",
+  "description": "A Discord bot for the TypeSafe Cult server.",
   "main": "index.js",
   "scripts": {
     "dev": "dotenv -- turbo run dev",
