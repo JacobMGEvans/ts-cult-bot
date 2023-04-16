@@ -45,16 +45,11 @@ const handleButtonsInModChannel = async (
   client: Client,
   interaction: ButtonInteraction
 ): Promise<void> => {
-  if (interaction.channel === null || interaction.replied) return;
 
-  const messageWithButtonEvent =
-    await interaction.channel.awaitMessageComponent();
-
-  if (!messageWithButtonEvent) return;
-  const isApproved = messageWithButtonEvent?.customId === "rowApproveID";
-  const isDenied = messageWithButtonEvent?.customId === "rowDenyID";
+  const isApproved = interaction?.customId === "rowApproveID";
+  const isDenied = interaction?.customId === "rowDenyID";
   if (isApproved) {
-    const jobID = messageWithButtonEvent?.message.embeds[0].fields.find(
+    const jobID = interaction?.message.embeds[0].fields.find(
       (field) => field.name === "Job ID"
     )?.value;
 
@@ -75,6 +70,7 @@ const handleButtonsInModChannel = async (
         name: approvedJob.title,
         autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
       });
+
       const isJobThreadCreated = await approvedJobThread.send({
         content: `<@${approvedJob.user.id}> Your job posting has been approved!
 
@@ -84,7 +80,7 @@ const handleButtonsInModChannel = async (
         `,
       });
       if (Boolean(isJobThreadCreated)) {
-        await messageWithButtonEvent?.update({
+        await interaction.update({
           content: `Job Posting ${approvedJob.title} from <@${approvedJob.user.id}> Approved by <@${interaction.user.id}>`,
           embeds: [],
           components: [],
@@ -102,7 +98,7 @@ const handleButtonsInModChannel = async (
   }
 
   if (isDenied) {
-    const jobID = messageWithButtonEvent?.message.embeds[0].fields.find(
+    const jobID = interaction?.message.embeds[0].fields.find(
       (field) => field.name === "Job ID"
     )?.value;
 
@@ -116,7 +112,7 @@ const handleButtonsInModChannel = async (
     });
 
     if (deniedJob) {
-      await messageWithButtonEvent?.update({
+      await interaction.update({
         content: `Button: Job Posting ${deniedJob.title} from <@${deniedJob.user.id}> Denied by <@${interaction.user.id}>`,
         embeds: [],
         components: [],
