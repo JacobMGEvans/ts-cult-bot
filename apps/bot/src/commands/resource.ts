@@ -40,13 +40,13 @@ async function handleListCommand(interaction: CommandInteraction) {
 
 // Handler function for the "Search for ResourceType entries" command
 async function handleSearchCommand(interaction: CommandInteraction) {
-  const term = interaction.options.getString('term');
+  const term = interaction.options.get('term');
   // TODO: Implement logic to search for ResourceType entries that match the provided term
 }
 
 // Handler function for the "Grab all matching resources by type and display list" command
 async function handleResourceCommand(interaction: CommandInteraction) {
-  const type = interaction.options.getString('type');
+  const type = interaction.options.get('type');
   // TODO: Implement logic to grab all matching resources by type and display list
 }
 
